@@ -120,7 +120,7 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
     size_t signer_index;
 
     if (parse_message_header(&parser, header) != 0) {
-        // This is not a valid Solana message
+        // This is not a valid Aelf message
         THROW(ApduReplyAelfInvalidMessage);
     }
 

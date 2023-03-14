@@ -1,13 +1,4 @@
-# Solana application : Common Technical Specifications
-
-## 1.3.1
-
-- Add support for versioned messages
-
-## 1.3.0
-
-- Add SIGN SOLANA OFF-CHAIN MESSAGE
-
+# Aelf application : Common Technical Specifications
 ## About
 
 This application describes the APDU messages interface to communicate with the Solana application.
@@ -15,7 +6,7 @@ This application describes the APDU messages interface to communicate with the S
 The application covers the following functionalities :
 
 - Retrieve an address given an account number
-- Sign Solana transaction
+- Sign Aelf transaction
 - Sign off-chain message
 
 The application interface can be accessed over HID or BLE
@@ -52,7 +43,7 @@ _None_
 
 #### Description
 
-_This command returns a Solana pubkey for the given BIP 32 path_
+_This command returns a Aelf pubkey for the given BIP 32 path_
 
 ##### Command
 
@@ -75,11 +66,11 @@ _This command returns a Solana pubkey for the given BIP 32 path_
 | ------------- | :------: |
 | Pubkey        |    32    |
 
-### SIGN SOLANA TRANSACTION
+### SIGN Aelf TRANSACTION
 
 #### Description
 
-_This command signs a Solana Transaction after having the user validate the transaction-specific parameters:_
+_This command signs a Aelf Transaction after having the user validate the transaction-specific parameters:_
 
 ##### Command
 
@@ -104,11 +95,11 @@ _This command signs a Solana Transaction after having the user validate the tran
 | ------------- | :------: |
 | Signature     |    64    |
 
-### SIGN SOLANA OFF-CHAIN MESSAGE
+### SIGN Aelf OFF-CHAIN MESSAGE
 
 #### Description
 
-_This command signs a Solana Off-Chain Message after having the user validate the text of ASCII encoded messages, or hash of UTF-8 encoded messages:_
+_This command signs a Aelf Off-Chain Message after having the user validate the text of ASCII encoded messages, or hash of UTF-8 encoded messages:_
 
 ##### Command
 
