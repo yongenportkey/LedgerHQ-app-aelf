@@ -125,7 +125,7 @@ static int parse_vote_update_validator_id_instruction(Parser* parser,
         // https://github.com/solana-labs/solana/pull/8947
         BAIL_IF(instruction_accounts_iterator_next(&it, &info->new_validator_id));
     } else if (instruction->data_length == (sizeof(uint32_t) + sizeof(Pubkey))) {
-        // Before 1.0.8 and 1.1.3, the validaotr identity was passed
+        // Before 1.0.8 and 1.1.3, the validator identity was passed
         // as an instruction arg
         BAIL_IF(parse_pubkey(parser, &info->new_validator_id));
         // Skip clock sysvar

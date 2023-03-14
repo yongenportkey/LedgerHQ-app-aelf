@@ -73,7 +73,7 @@ UX_STEP_NOCB_INIT(ux_summary_step,
                           flags |= DisplayFlagLongPubkeys;
                       }
                       if (transaction_summary_display_item(step_index, flags)) {
-                          THROW(ApduReplySolanaSummaryUpdateFailed);
+                          THROW(ApduReplyAelfSummaryUpdateFailed);
                       }
                   },
                   {
@@ -121,7 +121,7 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
 
     if (parse_message_header(&parser, header) != 0) {
         // This is not a valid Solana message
-        THROW(ApduReplySolanaInvalidMessage);
+        THROW(ApduReplyAelfInvalidMessage);
     }
 
     // Ensure the requested signer is present in the header
@@ -129,7 +129,7 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
                                G_command.derivation_path_length,
                                &signer_index,
                                header) != 0) {
-        THROW(ApduReplySolanaInvalidMessageHeader);
+        THROW(ApduReplyAelfInvalidMessageHeader);
     }
     print_config.signer_pubkey = &header->pubkeys[signer_index];
 
@@ -185,7 +185,7 @@ void handle_sign_message_ui(volatile unsigned int *flags) {
 
         ux_flow_init(0, flow_steps, NULL);
     } else {
-        THROW(ApduReplySolanaSummaryFinalizeFailed);
+        THROW(ApduReplyAelfSummaryFinalizeFailed);
     }
 
     *flags |= IO_ASYNCH_REPLY;
