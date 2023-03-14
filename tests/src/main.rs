@@ -1,11 +1,11 @@
 use rand::prelude::{RngCore, SeedableRng, StdRng};
-use aelf_remote_wallet::{
+use solana_remote_wallet::{
     ledger::{LedgerSettings, LedgerWallet},
     ledger_error::LedgerError,
     locator::Manufacturer,
     remote_wallet::{initialize_wallet_manager, RemoteWallet, RemoteWalletError},
 };
-use aelf_sdk::{
+use solana_sdk::{
     address_lookup_table_account::AddressLookupTableAccount,
     derivation_path::DerivationPath,
     hash::Hash,
@@ -13,11 +13,11 @@ use aelf_sdk::{
     message::{v0::Message as MessageV0, Message},
     pubkey::Pubkey,
     stake::{
-        instruction as stake_instruction, program as aelf_stake_program, state as stake_state,
+        instruction as stake_instruction, program as solana_stake_program, state as stake_state,
     },
     system_instruction, system_program,
 };
-use aelf_vote_program::{vote_instruction, vote_state};
+use solana_vote_program::{vote_instruction, vote_state};
 use spl_associated_token_account::{
     get_associated_token_address, instruction::create_associated_token_account,
 };
@@ -27,7 +27,7 @@ fn get_ledger() -> (Arc<LedgerWallet>, Pubkey) {
     let wallet_manager = initialize_wallet_manager().expect("Couldn't start wallet manager");
 
     // Update device list
-    const NO_DEVICE_HELP: &str = "No Ledger found, make sure you have a unlocked Ledger connected with the Ledger Wallet Aelf running";
+    const NO_DEVICE_HELP: &str = "No Ledger found, make sure you have a unlocked Ledger connected with the Ledger Wallet solana running";
     wallet_manager.update_devices().expect(NO_DEVICE_HELP);
     assert!(
         !wallet_manager.list_devices().is_empty(),
@@ -84,7 +84,7 @@ fn test_ledger_sign_transaction() -> Result<(), RemoteWalletError> {
     let recipients: Vec<(Pubkey, u64)> = (0..10).map(|_| (Pubkey::new_unique(), 42)).collect();
     let instructions = system_instruction::transfer_many(&from, &recipients);
     let message = Message::new(&instructions, Some(&ledger_base_pubkey)).serialize();
-    let hash = aelf_sdk::hash::hash(&message);
+    let hash = solana_sdk::hash::hash(&message);
     println!("Expected hash: {}", hash);
     let signature = ledger.sign_message(&derivation_path, &message)?;
     assert!(signature.verify(from.as_ref(), &message));
@@ -111,7 +111,7 @@ fn test_ledger_sign_versioned_transaction() -> Result<(), RemoteWalletError> {
     let message = MessageV0::try_compile(&ledger_base_pubkey, &instructions, &[], Hash::default())
         .unwrap()
         .serialize();
-    let hash = aelf_sdk::hash::hash(&message);
+    let hash = solana_sdk::hash::hash(&message);
     println!("Expected hash: {}", hash);
     let signature = ledger.sign_message(&derivation_path, &message)?;
     assert!(signature.verify(from.as_ref(), &message));
@@ -127,7 +127,7 @@ fn test_ledger_sign_versioned_transaction_with_table() -> Result<(), RemoteWalle
     let from = ledger.get_pubkey(&derivation_path, false)?;
     let instruction = system_instruction::transfer(&from, &ledger_base_pubkey, 42);
     let lookup_table = AddressLookupTableAccount {
-        key: aelf_sdk::pubkey::Pubkey::new_unique(),
+        key: solana_sdk::pubkey::Pubkey::new_unique(),
         addresses: vec![from, ledger_base_pubkey],
     };
     let message = MessageV0::try_compile(
@@ -147,7 +147,7 @@ fn test_ledger_sign_versioned_transaction_with_table() -> Result<(), RemoteWalle
     let message = MessageV0::try_compile(&from, &instructions, &[lookup_table], Hash::default())
         .unwrap()
         .serialize();
-    let hash = aelf_sdk::hash::hash(&message);
+    let hash = solana_sdk::hash::hash(&message);
     println!("Expected hash: {}", hash);
     let signature = ledger.sign_message(&derivation_path, &message)?;
     assert!(signature.verify(from.as_ref(), &message));
@@ -176,7 +176,7 @@ fn test_ledger_sign_offchain_message_ascii() -> Result<(), RemoteWalletError> {
 
     let from = ledger.get_pubkey(&derivation_path, false)?;
 
-    let message = aelf_sdk::offchain_message::OffchainMessage::new(0, b"Test message")
+    let message = solana_sdk::offchain_message::OffchainMessage::new(0, b"Test message")
         .map_err(|_| RemoteWalletError::InvalidInput("Bad message".to_string()))?
         .serialize()
         .map_err(|_| RemoteWalletError::InvalidInput("Failed to serialize message".to_string()))?;
@@ -195,13 +195,13 @@ fn test_ledger_sign_offchain_message_utf8() -> Result<(), RemoteWalletError> {
     let from = ledger.get_pubkey(&derivation_path, false)?;
 
     let message =
-        aelf_sdk::offchain_message::OffchainMessage::new(0, "Тестовое сообщение".as_bytes())
+        solana_sdk::offchain_message::OffchainMessage::new(0, "Тестовое сообщение".as_bytes())
             .map_err(|_| RemoteWalletError::InvalidInput("Bad message".to_string()))?
             .serialize()
             .map_err(|_| {
                 RemoteWalletError::InvalidInput("Failed to serialize message".to_string())
             })?;
-    let hash = aelf_sdk::hash::hash(&message);
+    let hash = solana_sdk::hash::hash(&message);
     println!("Expected hash: {}", hash);
     let signature = ledger.sign_message(&derivation_path, &message)?;
     assert!(signature.verify(from.as_ref(), &message));
@@ -286,7 +286,7 @@ fn test_create_stake_account_with_seed_and_delegate() -> Result<(), RemoteWallet
     let from = ledger.get_pubkey(&derivation_path, false)?;
     let base = from;
     let seed = "seedseedseedseedseedseedseedseed";
-    let stake_account = Pubkey::create_with_seed(&base, seed, &aelf_stake_program::id()).unwrap();
+    let stake_account = Pubkey::create_with_seed(&base, seed, &solana_stake_program::id()).unwrap();
     let authorized = stake_state::Authorized {
         staker: Pubkey::new(&[3u8; 32]),
         withdrawer: Pubkey::new(&[4u8; 32]),
@@ -374,7 +374,7 @@ fn test_create_stake_account_with_seed_and_nonce() -> Result<(), RemoteWalletErr
     let nonce_authority = Pubkey::new(&[2u8; 32]);
     let base = from;
     let seed = "seedseedseedseedseedseedseedseed";
-    let stake_account = Pubkey::create_with_seed(&base, seed, &aelf_stake_program::id()).unwrap();
+    let stake_account = Pubkey::create_with_seed(&base, seed, &solana_stake_program::id()).unwrap();
     let authorized = stake_state::Authorized {
         staker: Pubkey::new(&[3u8; 32]),
         withdrawer: Pubkey::new(&[4u8; 32]),
@@ -479,7 +479,7 @@ fn test_create_stake_account_checked_with_seed_and_nonce() -> Result<(), RemoteW
     let nonce_authority = Pubkey::new(&[2u8; 32]);
     let base = from;
     let seed = "seedseedseedseedseedseedseedseed";
-    let stake_account = Pubkey::create_with_seed(&base, seed, &aelf_stake_program::id()).unwrap();
+    let stake_account = Pubkey::create_with_seed(&base, seed, &solana_stake_program::id()).unwrap();
     let authorized = stake_state::Authorized {
         staker: Pubkey::new(&[3u8; 32]),
         withdrawer: Pubkey::new(&[4u8; 32]),
@@ -561,7 +561,7 @@ fn test_sign_full_shred_of_garbage_tx() -> Result<(), RemoteWalletError> {
         data,
     };
     let message = Message::new(&[instruction], Some(&ledger_base_pubkey)).serialize();
-    let hash = aelf_sdk::hash::hash(&message);
+    let hash = solana_sdk::hash::hash(&message);
     println!("Expected hash: {}", hash);
     let signature = ledger.sign_message(&derivation_path, &message)?;
     assert!(signature.verify(from.as_ref(), &message));
@@ -598,7 +598,7 @@ fn test_create_vote_account_with_seed() -> Result<(), RemoteWalletError> {
     let from = ledger.get_pubkey(&derivation_path, false)?;
     let base = from;
     let seed = "seedseedseedseedseedseedseedseed";
-    let vote_account = Pubkey::create_with_seed(&base, seed, &aelf_vote_program::id()).unwrap();
+    let vote_account = Pubkey::create_with_seed(&base, seed, &solana_vote_program::id()).unwrap();
     let vote_init = vote_state::VoteInit {
         node_pubkey: Pubkey::new(&[1u8; 32]),
         authorized_voter: Pubkey::new(&[2u8; 32]),
@@ -1001,7 +1001,7 @@ fn test_stake_split_with_seed() -> Result<(), RemoteWalletError> {
     let stake_account = ledger_base_pubkey;
     let base = stake_authority;
     let seed = "seedseedseedseedseedseedseedseed";
-    let split_account = Pubkey::create_with_seed(&base, seed, &aelf_stake_program::id()).unwrap();
+    let split_account = Pubkey::create_with_seed(&base, seed, &solana_stake_program::id()).unwrap();
     let instructions = stake_instruction::split_with_seed(
         &stake_account,
         &stake_authority,
@@ -1639,7 +1639,7 @@ fn test_spl_associated_token_account_create_with_transfer_checked() -> Result<()
 mod serum_assert_owner_program {
     use super::*;
 
-    aelf_sdk::declare_id!("4MNPdKu9wFMvEeZBMt3Eipfs5ovVWTJb31pEXDJAAxX5");
+    solana_sdk::declare_id!("4MNPdKu9wFMvEeZBMt3Eipfs5ovVWTJb31pEXDJAAxX5");
 
     pub mod instruction {
         use super::*;
@@ -1724,7 +1724,7 @@ fn ensure_blind_signing() -> Result<(), RemoteWalletError> {
 }
 
 fn main() {
-    aelf_logger::setup();
+    solana_logger::setup();
     match do_run_tests() {
         Err(e @ RemoteWalletError::LedgerError(LedgerError::UserCancel)) => {
             println!(" >>> {} <<<", e);
