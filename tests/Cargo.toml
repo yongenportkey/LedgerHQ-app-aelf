@@ -6,7 +6,7 @@ authors = ["Aelf Maintainers <social@aelf.io>"]
 repository = "https://github.com/blooo-io/LedgerHQ-app-aelf"
 license = "Apache-2.0"
 homepage = "https://aelf.com/"
-edition = "2023"
+edition = "2021"
 
 [dependencies]
 hex = "0.4.1"
