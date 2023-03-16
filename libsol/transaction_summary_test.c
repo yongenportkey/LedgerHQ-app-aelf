@@ -167,7 +167,7 @@ void test_transaction_summary_update_display_for_item() {
 
     summary_item_set_amount(&item, "amount", 42);
     assert(transaction_summary_update_display_for_item(&item, DisplayFlagNone) == 0);
-    assert_transaction_summary_display("amount", "0.000000042 ELF");
+    assert_transaction_summary_display("amount", "0.00000042 ELF");
 
     summary_item_set_token_amount(&item, "token", 42, "TST", 2);
     assert(transaction_summary_update_display_for_item(&item, DisplayFlagNone) == 0);
