@@ -3,20 +3,19 @@
 #include <stdio.h>
 
 void test_print_amount() {
-    char printed[34];
+    char printed[24];
 
     print_amount(0, printed, sizeof(printed));
     assert_string_equal(printed, "0 ELF");
     print_amount(1, printed, sizeof(printed));
-    assert_string_equal(printed, "0.000000000000000001 ELF");
-    print_amount(1000000000000000000, printed, sizeof(printed));
+    assert_string_equal(printed, "0.00000001 ELF");
+    print_amount(100000000, printed, sizeof(printed));
     assert_string_equal(printed, "1 ELF");
-    print_amount(10000000000000000001, printed, sizeof(printed));
-    printf("%s\n", printed);
-    assert_string_equal(printed, "10000000.000000001 ELF");
-    print_amount(10000000001, printed, sizeof(printed));
-    assert_string_equal(printed, "10.000000001 ELF");
-    print_amount(10000000100000000, printed, sizeof(printed));
+    print_amount(1000000000000001, printed, sizeof(printed));
+    assert_string_equal(printed, "10000000.00000001 ELF");
+    print_amount(1000000001, printed, sizeof(printed));
+    assert_string_equal(printed, "10.00000001 ELF");
+    print_amount(1000000010000000, printed, sizeof(printed));
     assert_string_equal(printed, "10000000.1 ELF");
 }
 
