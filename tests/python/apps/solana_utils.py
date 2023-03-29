@@ -51,4 +51,4 @@ SOL_PACKED_DERIVATION_PATH_2    = pack_derivation_path("m/44'/501'/0'/0'")
 
 ### Package this currency configuration in exchange format ###
 
-SOL_CONF = create_currency_config("SOL", "Solana")
+SOL_CONF = create_currency_config("ELF", "AELF")
