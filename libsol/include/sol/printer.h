@@ -6,7 +6,7 @@
 
 #define SUMMARY_LENGTH       7
 #define TITLE_SIZE           32
-#define BASE58_PUBKEY_LENGTH 45
+#define BASE58_PUBKEY_LENGTH 51
 #define BASE58_PUBKEY_SHORT  (SUMMARY_LENGTH + 2 + SUMMARY_LENGTH + 1)
 
 int print_token_amount(uint64_t amount,

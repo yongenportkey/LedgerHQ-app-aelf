@@ -30,14 +30,14 @@ FEES_BYTES      = decimal_to_bytes(FEES)
 
 ### Proposed foreign and owned addresses ###
 
-FOREIGN_ADDRESS     = b"AxmUF3qkdz1zs151Q5WttVMkFpFGQPwghZs4d1mwY55d"
-FOREIGN_PUBLIC_KEY  = base58.b58decode(FOREIGN_ADDRESS)
+FOREIGN_ADDRESS     = "27UXFkt8XuZ3N8ToiBf4UvdSgM8dU87Q9B2QETqEaZ5vGaorZa"
+FOREIGN_PUBLIC_KEY  = base58.b58decode_check(FOREIGN_ADDRESS)
 
-FOREIGN_ADDRESS_2       = b"8bjDMujLMttbmkTtoFgfw2sPYchSzzcTCEPGYDaNs3nj"
-FOREIGN_PUBLIC_KEY_2    = base58.b58decode(FOREIGN_ADDRESS_2)
+FOREIGN_ADDRESS_2       = "27UXFkt8XuZ3N8ToiBf4UvdSgM8dU87Q9B2QETqEaZ5vGaorZa"
+FOREIGN_PUBLIC_KEY_2    = base58.b58decode_check(FOREIGN_ADDRESS_2)
 
-OWNED_ADDRESS       = b"3GJzvStsiYZonWE7WTsmt1BpWXkfcgWMGinaDwNs9HBc"
-OWNED_PUBLIC_KEY    = base58.b58decode(OWNED_ADDRESS)
+OWNED_ADDRESS       = "2TXjUAfsxUeY54jfijrQPzUgMeErV3cAqaNLqKURmy7VYyVMPa"
+OWNED_PUBLIC_KEY    = base58.b58decode_check(OWNED_ADDRESS)
 
 
 ### Proposed Solana derivation paths for tests ###

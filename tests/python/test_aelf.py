@@ -8,15 +8,13 @@ from .apps.aelf_utils import FOREIGN_PUBLIC_KEY, FOREIGN_PUBLIC_KEY_2, AMOUNT, A
 
 from .utils import ROOT_SCREENSHOT_PATH
 
-def test_solana_simple_transfer_ok_1(backend, navigator, test_name):
+def test_aelf_simple_transfer_ok_1(backend, navigator, test_name):
     aelf = AelfClient(backend)
     from_public_key = aelf.get_public_key(ELF_PACKED_DERIVATION_PATH)
 
     # Create instruction
     instruction: SystemInstructionTransfer = SystemInstructionTransfer(from_public_key, FOREIGN_PUBLIC_KEY, AMOUNT)
     message: bytes = Message([instruction]).serialize()
-    print("message is =======\n",message)
-    print("pubkey is =======\n",FOREIGN_PUBLIC_KEY)
 
     with aelf.send_async_sign_message(ELF_PACKED_DERIVATION_PATH, message):
         navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
@@ -31,7 +29,7 @@ def test_solana_simple_transfer_ok_1(backend, navigator, test_name):
     assert False
 
 
-# def test_solana_simple_transfer_ok_2(backend, navigator, test_name):
+# def test_aelf_simple_transfer_ok_2(backend, navigator, test_name):
 #     aelf = AelfClient(backend)
 #     from_public_key = aelf.get_public_key(ELF_PACKED_DERIVATION_PATH_2)
 
@@ -51,7 +49,7 @@ def test_solana_simple_transfer_ok_1(backend, navigator, test_name):
 #     verify_signature(from_public_key, message, signature)
 
 
-# def test_solana_simple_transfer_refused(backend, navigator, test_name):
+# def test_aelf_simple_transfer_refused(backend, navigator, test_name):
 #     aelf = AelfClient(backend)
 #     from_public_key = aelf.get_public_key(ELF_PACKED_DERIVATION_PATH)
 
@@ -70,7 +68,7 @@ def test_solana_simple_transfer_ok_1(backend, navigator, test_name):
 #     assert rapdu.status == ErrorType.USER_CANCEL
 
 
-# def test_solana_blind_sign_refused(backend):
+# def test_aelf_blind_sign_refused(backend):
 #     aelf = AelfClient(backend)
 #     from_public_key = aelf.get_public_key(ELF_PACKED_DERIVATION_PATH)
 

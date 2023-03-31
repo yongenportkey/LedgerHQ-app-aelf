@@ -20,16 +20,6 @@ class SystemInstruction(IntEnum):
     CreateAccount           = 0x00
     Assign                  = 0x01
     Transfer                = 0x02
-    CreateAccountWithSeed   = 0x03
-    AdvanceNonceAccount     = 0x04
-    WithdrawNonceAccount    = 0x05
-    InitializeNonceAccount  = 0x06
-    AuthorizeNonceAccount   = 0x07
-    Allocate                = 0x08
-    AllocateWithSeed        = 0x09
-    AssignWithSeed          = 0x10
-    TransferWithSeed        = 0x11
-    UpgradeNonceAccount     = 0x12
 
 
 class MessageHeader:
