@@ -137,10 +137,9 @@ int parse_version(Parser* parser, MessageHeader* header) {
 }
 
 int parse_message_header(Parser* parser, MessageHeader* header) {
-    BAIL_IF(parse_version(parser, header));
-    BAIL_IF(parse_pubkeys(parser, &header->pubkeys_header, &header->pubkeys));
+    // BAIL_IF(parse_version(parser, header));
     BAIL_IF(parse_blockhash(parser, &header->blockhash));
-    BAIL_IF(parse_length(parser, &header->instructions_length));
+    // BAIL_IF(parse_length(parser, &header->instructions_length));
     return 0;
 }
 
@@ -168,8 +167,6 @@ static int parse_data(Parser* parser, const uint8_t** data, size_t* data_length)
 }
 
 int parse_instruction(Parser* parser, Instruction* instruction) {
-    BAIL_IF(parse_u8(parser, &instruction->program_id_index));
-    BAIL_IF(parse_data(parser, &instruction->accounts, &instruction->accounts_length));
     BAIL_IF(parse_data(parser, &instruction->data, &instruction->data_length));
     return 0;
 }

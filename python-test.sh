@@ -4,4 +4,4 @@ mv bin/app.elf bin/solana_${device_label}.elf
 mkdir tests/elfs
 cp bin/*.elf tests/elfs
 
-pytest tests/python/ -v --tb=short --device ${device_label}
+pytest -s tests/python/ -v --tb=short --device ${device_label}

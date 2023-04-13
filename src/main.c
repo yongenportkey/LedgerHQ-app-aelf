@@ -31,6 +31,7 @@ static void reset_main_globals(void) {
 }
 
 void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx) {
+    PRINTF("SLIN2 %d\n", tx);
     if (!flags || !tx) {
         THROW(ApduReplySdkInvalidParameter);
     }
@@ -46,7 +47,6 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
     if (G_command.state == ApduStatePayloadInProgress) {
         THROW(ApduReplySuccess);
     }
-
     switch (G_command.instruction) {
         case InsDeprecatedGetAppConfiguration:
         case InsGetAppConfiguration:
@@ -65,6 +65,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
 
         case InsDeprecatedSignMessage:
         case InsSignMessage:
+            PRINTF("SLIN %d\n", G_command.instruction);
             handle_sign_message_parse_message(tx);
             handle_sign_message_ui(flags);
             break;
@@ -112,7 +113,6 @@ void app_main(void) {
                 }
 
                 PRINTF("New APDU received:\n%.*H\n", rx, G_io_apdu_buffer);
-
                 handleApdu(&flags, &tx, rx);
             }
             CATCH(ApduReplySdkExceptionIoReset) {

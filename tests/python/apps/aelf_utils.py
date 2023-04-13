@@ -18,7 +18,7 @@ def decimal_to_bytes(decimal: int) -> str:
 
 ### Proposed values for fees and amounts ###
 
-AMOUNT          = elf_decimal_amount(2.078)
+AMOUNT          = elf_decimal_amount(10.01)
 AMOUNT_BYTES    = decimal_to_bytes(AMOUNT)
 
 AMOUNT_2        = elf_decimal_amount(101.00001234)
@@ -30,13 +30,13 @@ FEES_BYTES      = decimal_to_bytes(FEES)
 
 ### Proposed foreign and owned addresses ###
 
-FOREIGN_ADDRESS     = b'27UXFkt8XuZ3N8ToiBf4UvdSgM8dU87Q9B2QETqEaZ5vGaorZa'
+FOREIGN_ADDRESS     = b'CRuQygxHeZLvfMFLbZQVvs6DMeWe3Jn9m3yDiCF5JgmdWAiLN'
 FOREIGN_PUBLIC_KEY  = base58.b58decode_check(FOREIGN_ADDRESS)
 
-FOREIGN_ADDRESS_2       = b'27UXFkt8XuZ3N8ToiBf4UvdSgM8dU87Q9B2QETqEaZ5vGaorZa'
+FOREIGN_ADDRESS_2       = b'CRuQygxHeZLvfMFLbZQVvs6DMeWe3Jn9m3yDiCF5JgmdWAiLN'
 FOREIGN_PUBLIC_KEY_2    = base58.b58decode_check(FOREIGN_ADDRESS_2)
 
-OWNED_ADDRESS       = b'2TXjUAfsxUeY54jfijrQPzUgMeErV3cAqaNLqKURmy7VYyVMPa'
+OWNED_ADDRESS       = b'CRuQygxHeZLvfMFLbZQVvs6DMeWe3Jn9m3yDiCF5JgmdWAiLN'
 OWNED_PUBLIC_KEY    = base58.b58decode_check(OWNED_ADDRESS)
 
 
@@ -49,3 +49,4 @@ ELF_PACKED_DERIVATION_PATH_2    = pack_derivation_path("m/44'/1616'/0'/0'")
 ### Package this currency configuration in exchange format ###
 
 ELF_CONF = create_currency_config("ELF", "AELF")
+TICKER = b'ELF'

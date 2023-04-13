@@ -114,3 +114,11 @@ int print_system_initialize_nonce_info(const char* primary_title,
 int print_system_allocate_with_seed_info(const char* primary_title,
                                          const SystemAllocateWithSeedInfo* info,
                                          const PrintConfig* print_config);
+
+int parse_system_transfer_instruction(Parser* parser,
+                                      const Instruction* instruction,
+                                      const MessageHeader* header,
+                                      SystemTransferInfo* info);
+
+int print_system_transfer_info(const SystemTransferInfo* info,
+                               const PrintConfig* print_config);

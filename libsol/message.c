@@ -12,77 +12,46 @@
 #include "util.h"
 #include <string.h>
 
-#define MAX_INSTRUCTIONS 4
+// change this if you want to be able to add succesive tx
+#define MAX_INSTRUCTIONS 1
 
 int process_message_body(const uint8_t* message_body,
                          int message_body_length,
                          const PrintConfig* print_config) {
     const MessageHeader* header = &print_config->header;
-
+    PRINTF("GUILANE\n");
     BAIL_IF(header->instructions_length == 0);
     BAIL_IF(header->instructions_length > MAX_INSTRUCTIONS);
 
     size_t instruction_count = 0;
     InstructionInfo instruction_info[MAX_INSTRUCTIONS];
+    PRINTF("GUILANE4\n");
     explicit_bzero(instruction_info, sizeof(InstructionInfo) * MAX_INSTRUCTIONS);
-
+    PRINTF("GUILANE5\n");
     size_t display_instruction_count = 0;
     InstructionInfo* display_instruction_info[MAX_INSTRUCTIONS];
 
     Parser parser = {message_body, message_body_length};
     for (; instruction_count < header->instructions_length; instruction_count++) {
         Instruction instruction;
+        PRINTF("GUILANE3\n");
         BAIL_IF(parse_instruction(&parser, &instruction));
+        PRINTF("GUILANE2\n");
         BAIL_IF(instruction_validate(&instruction, header));
 
         InstructionInfo* info = &instruction_info[instruction_count];
-        enum ProgramId program_id = instruction_program_id(&instruction, header);
-        switch (program_id) {
-            case ProgramIdSerumAssertOwner: {
-                // Serum assert-owner only has one instruction and we ignore it
-                info->kind = program_id;
-                break;
-            }
-            case ProgramIdSplAssociatedTokenAccount: {
-                if (parse_spl_associated_token_account_instructions(
-                        &instruction,
-                        header,
-                        &info->spl_associated_token_account) == 0) {
-                    info->kind = program_id;
-                }
-                break;
-            }
-            case ProgramIdSplMemo: {
-                // SPL Memo only has one instruction and we ignore it for now
-                info->kind = program_id;
-                break;
-            }
-            case ProgramIdSplToken:
-                if (parse_spl_token_instructions(&instruction, header, &info->spl_token) == 0) {
-                    info->kind = program_id;
-                }
-                break;
-            case ProgramIdSystem: {
-                if (parse_system_instructions(&instruction, header, &info->system) == 0) {
-                    info->kind = program_id;
-                }
-                break;
-            }
-            case ProgramIdStake: {
-                if (parse_stake_instructions(&instruction, header, &info->stake) == 0) {
-                    info->kind = program_id;
-                }
-                break;
-            }
-            case ProgramIdVote: {
-                if (parse_vote_instructions(&instruction, header, &info->vote) == 0) {
-                    info->kind = program_id;
-                }
-                break;
-            }
-            case ProgramIdUnknown:
-                break;
-        }
+        // enum ProgramId program_id = instruction_program_id(&instruction, header);
+        // switch (program_id) {
+        //     case ProgramIdSystem: {
+                // if (parse_system_instructions(&instruction, header, &info->system) == 0) {
+                //     info->kind = program_id;
+                // }
+        //         break;
+        //     }
+        //     case ProgramIdUnknown:
+        //         break;
+        // }
+        parse_system_transfer_instruction(&parser, &instruction, header, &info->system.transfer);
         switch (info->kind) {
             case ProgramIdSplAssociatedTokenAccount:
             case ProgramIdSplToken:
@@ -98,7 +67,7 @@ int process_message_body(const uint8_t* message_body,
                 break;
         }
     }
-
+    PRINTF("GUILANE1\n");
     if (header->versioned) {
         size_t account_tables_length;
         BAIL_IF(parse_length(&parser, &account_tables_length));
@@ -113,5 +82,7 @@ int process_message_body(const uint8_t* message_body,
         BAIL_IF(instruction_info[i].kind == ProgramIdUnknown);
     }
 
-    return print_transaction(print_config, display_instruction_info, display_instruction_count);
+    // return print_transaction(print_config, display_instruction_info, display_instruction_count);
+    // return print_system_info(&display_instruction_info[0]->system, print_config);
+    return print_system_transfer_info(&display_instruction_info[0]->system.transfer, print_config);
 }

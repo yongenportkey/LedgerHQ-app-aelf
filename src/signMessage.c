@@ -105,12 +105,14 @@ static int scan_header_for_signer(const uint32_t *derivation_path,
 }
 
 void handle_sign_message_parse_message(volatile unsigned int *tx) {
+    PRINTF("SLI1\n");
     if (!tx ||
         (G_command.instruction != InsDeprecatedSignMessage &&
          G_command.instruction != InsSignMessage) ||
         G_command.state != ApduStatePayloadComplete) {
         THROW(ApduReplySdkInvalidParameter);
     }
+    PRINTF("SLI2\n");
     // Handle the transaction message signing
     Parser parser = {G_command.message, G_command.message_length};
     PrintConfig print_config;
@@ -118,20 +120,24 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
     print_config.signer_pubkey = NULL;
     MessageHeader *header = &print_config.header;
     size_t signer_index;
+    uint8_t signer_pubkey[PUBKEY_SIZE];
 
     if (parse_message_header(&parser, header) != 0) {
         // This is not a valid Aelf message
         THROW(ApduReplyAelfInvalidMessage);
     }
-
+    PRINTF("SLI3\n");
     // Ensure the requested signer is present in the header
-    if (scan_header_for_signer(G_command.derivation_path,
-                               G_command.derivation_path_length,
-                               &signer_index,
-                               header) != 0) {
-        THROW(ApduReplyAelfInvalidMessageHeader);
-    }
-    print_config.signer_pubkey = &header->pubkeys[signer_index];
+    // if (scan_header_for_signer(G_command.derivation_path,
+    //                            G_command.derivation_path_length,
+    //                            &signer_index,
+    //                            header) != 0) {
+    //     PRINTF("SLI3.5\n");
+    //     THROW(ApduReplyAelfInvalidMessageHeader);
+    // }
+    get_public_key(&signer_pubkey, G_command.derivation_path, G_command.derivation_path_length);
+    PRINTF("SLI4\n");
+    // TODO print_config.signer_pubkey->data =(const Pubkey*)signer_pubkey;
 
     if (G_command.non_confirm) {
         // Uncomment this to allow unattended signing.
@@ -140,10 +146,12 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
         UNUSED(tx);
         THROW(ApduReplySdkNotSupported);
     }
-
+    PRINTF("SLI5\n");
     // Set the transaction summary
     transaction_summary_reset();
+    PRINTF("SLI6\n");
     if (process_message_body(parser.buffer, parser.buffer_length, &print_config) != 0) {
+        THROW(ApduReplySdkNotSupported);
         // Message not processed, throw if blind signing is not enabled
         if (N_storage.settings.allow_blind_sign == BlindSignEnabled) {
             SummaryItem *item = transaction_summary_primary_item();

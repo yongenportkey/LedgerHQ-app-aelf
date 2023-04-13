@@ -39,22 +39,8 @@ int instruction_validate(const Instruction* instruction, const MessageHeader* he
 bool instruction_info_matches_brief(const InstructionInfo* info, const InstructionBrief* brief) {
     if (brief->program_id == info->kind) {
         switch (brief->program_id) {
-            case ProgramIdSerumAssertOwner:
-                return true;
-            case ProgramIdSplAssociatedTokenAccount:
-                return true;
-            case ProgramIdSplMemo:
-                return true;
-            case ProgramIdSplToken:
-                return (brief->spl_token == info->spl_token.kind);
-            case ProgramIdStake:
-                return (brief->stake == info->stake.kind);
             case ProgramIdSystem:
                 return (brief->system == info->system.kind);
-            case ProgramIdVote:
-                return (brief->vote == info->vote.kind);
-            case ProgramIdUnknown:
-                break;
         }
     }
     return false;

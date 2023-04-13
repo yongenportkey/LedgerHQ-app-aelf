@@ -22,11 +22,7 @@ enum ProgramId {
 typedef struct InstructionInfo {
     enum ProgramId kind;
     union {
-        SplAssociatedTokenAccountInfo spl_associated_token_account;
-        SplTokenInfo spl_token;
-        StakeInfo stake;
         SystemInfo system;
-        VoteInfo vote;
     };
 } InstructionInfo;
 

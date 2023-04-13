@@ -4,7 +4,7 @@ from ragger.utils import RAPDU
 
 from .apps.aelf import AelfClient, ErrorType
 from .apps.aelf_cmd_builder import SystemInstructionTransfer, Message, verify_signature
-from .apps.aelf_utils import FOREIGN_PUBLIC_KEY, FOREIGN_PUBLIC_KEY_2, AMOUNT, AMOUNT_2, ELF_PACKED_DERIVATION_PATH, ELF_PACKED_DERIVATION_PATH_2
+from .apps.aelf_utils import FOREIGN_PUBLIC_KEY, FOREIGN_PUBLIC_KEY_2, AMOUNT, AMOUNT_2, TICKER, ELF_PACKED_DERIVATION_PATH, ELF_PACKED_DERIVATION_PATH_2
 
 from .utils import ROOT_SCREENSHOT_PATH
 
@@ -13,8 +13,8 @@ def test_aelf_simple_transfer_ok_1(backend, navigator, test_name):
     from_public_key = aelf.get_public_key(ELF_PACKED_DERIVATION_PATH)
 
     # Create instruction
-    instruction: SystemInstructionTransfer = SystemInstructionTransfer(from_public_key, FOREIGN_PUBLIC_KEY, AMOUNT)
-    message: bytes = Message([instruction]).serialize()
+    instruction: SystemInstructionTransfer = SystemInstructionTransfer(FOREIGN_PUBLIC_KEY, TICKER, AMOUNT)
+    message: bytes = Message(instruction).serialize()
 
     with aelf.send_async_sign_message(ELF_PACKED_DERIVATION_PATH, message):
         navigator.navigate_until_text_and_compare(NavInsID.RIGHT_CLICK,
@@ -22,11 +22,9 @@ def test_aelf_simple_transfer_ok_1(backend, navigator, test_name):
                                                   "Approve",
                                                   ROOT_SCREENSHOT_PATH,
                                                   test_name)
-
     signature: bytes = aelf.get_async_response().data
 
     verify_signature(from_public_key, message, signature)
-    assert False
 
 
 # def test_aelf_simple_transfer_ok_2(backend, navigator, test_name):
