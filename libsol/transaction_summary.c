@@ -149,7 +149,6 @@ int transaction_summary_set_fee_payer_pubkey(const Pubkey* pubkey) {
 
 static int transaction_summary_update_display_for_item(const SummaryItem* item,
                                                        enum DisplayFlags flags) {
-    printf("item->kind %d",item->kind);
     switch (item->kind) {
         case SummaryItemNone:
             return 1;
