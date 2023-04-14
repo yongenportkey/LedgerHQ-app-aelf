@@ -59,16 +59,21 @@ int print_system_info(const SystemInfo* info, const PrintConfig* print_config) {
 // Returns 0 and populates SystemTransferInfo if provided a MessageHeader
 // and a transfer instruction, otherwise non-zero.
 int parse_system_transfer_instruction(Parser* parser,
-                                             const Instruction* instruction,
-                                             const MessageHeader* header,
-                                             SystemTransferInfo* info) {
-    InstructionAccountsIterator it;
-    instruction_accounts_iterator_init(&it, header, instruction);
+                                      const Instruction* instruction,
+                                      const MessageHeader* header,
+                                      SystemTransferInfo* info) {
+    // InstructionAccountsIterator it;
+    // instruction_accounts_iterator_init(&it, header, instruction);
 
-    BAIL_IF(instruction_accounts_iterator_next(&it, &info->from));
-    BAIL_IF(instruction_accounts_iterator_next(&it, &info->to));
-
+    // BAIL_IF(instruction_accounts_iterator_next(&it, &info->from));
+    // BAIL_IF(instruction_accounts_iterator_next(&it, &info->to));
     BAIL_IF(parse_u64(parser, &info->lamports));
+    // BAIL_IF(parse_data(parser, &info->lamports, &instruction->data_length));
+    PRINTF("GUI\n");
+    BAIL_IF(parse_pubkey(parser, &info->to));
+    PRINTF("GUI1\n");
+    BAIL_IF(parse_data(parser, &instruction->ticker, &instruction->ticker_length));
+    PRINTF("GUI2 %d\n", parser->buffer_length);
 
     return 0;
 }
@@ -91,14 +96,14 @@ int parse_system_instructions(const Instruction* instruction,
 int print_system_transfer_info(const SystemTransferInfo* info,
                                const PrintConfig* print_config) {
     SummaryItem* item;
-
+    PRINTF("GUILANED\n");
     item = transaction_summary_primary_item();
     summary_item_set_amount(item, "Transfer", info->lamports);
 
-    if (print_config_show_authority(print_config, info->from)) {
-        item = transaction_summary_general_item();
-        summary_item_set_pubkey(item, "Sender", info->from);
-    }
+    // if (print_config_show_authority(print_config, info->from)) {
+    //     item = transaction_summary_general_item();
+    //     summary_item_set_pubkey(item, "Sender", info->from);
+    // }
 
     item = transaction_summary_general_item();
     summary_item_set_pubkey(item, "Recipient", info->to);

@@ -36,11 +36,11 @@ typedef struct Hash {
 typedef struct Hash Blockhash;
 
 typedef struct Instruction {
-    uint8_t program_id_index;
-    const uint8_t* accounts;
-    size_t accounts_length;
     const uint8_t* data;
     size_t data_length;
+    const Pubkey* to_pubkey;
+    const uint8_t* ticker;
+    size_t ticker_length;
 } Instruction;
 
 typedef struct PubkeysHeader {
@@ -53,8 +53,8 @@ typedef struct PubkeysHeader {
 typedef struct MessageHeader {
     bool versioned;
     uint8_t version;
-    PubkeysHeader pubkeys_header;
-    const Pubkey* pubkeys;
+    // PubkeysHeader pubkeys_header;
+    // const Pubkey* pubkeys;
     const Blockhash* blockhash;
     size_t instructions_length;
 } MessageHeader;
@@ -66,6 +66,7 @@ typedef struct OffchainMessageHeader {
 } OffchainMessageHeader;
 
 static inline int parser_is_empty(Parser* parser) {
+    PRINTF("PARSER %d\n", parser->buffer_length);
     return parser->buffer_length == 0;
 }
 
@@ -97,6 +98,8 @@ int parse_message_header(Parser* parser, MessageHeader* header);
 int parse_offchain_message_header(Parser* parser, OffchainMessageHeader* header);
 
 int parse_instruction(Parser* parser, Instruction* instruction);
+
+int parse_data(Parser* parser, const uint8_t** data, size_t* data_length);
 
 // FIXME: I don't belong here
 static inline bool pubkeys_equal(const Pubkey* pubkey1, const Pubkey* pubkey2) {

@@ -47,6 +47,20 @@ enum SummaryItemKind {
 };
 typedef enum SummaryItemKind SummaryItemKind_t;
 
+struct SummaryItem {
+    const char* title;
+    enum SummaryItemKind kind;
+    union {
+        uint64_t u64;
+        int64_t i64;
+        const Pubkey* pubkey;
+        const Hash* hash;
+        const char* string;
+        SizedString sized_string;
+        TokenAmount token_amount;
+    };
+};
+
 typedef struct SummaryItem SummaryItem;
 
 extern char G_transaction_summary_title[TITLE_SIZE];

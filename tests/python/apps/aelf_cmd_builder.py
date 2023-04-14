@@ -49,9 +49,9 @@ class Instruction:
     to_pubkey: bytes
     ticker: int
     def serialize(self) -> bytes:
-        serialized: bytes = len(self.data).to_bytes(1, byteorder='little')
-        serialized += self.data
+        serialized: bytes = self.data
         serialized += self.to_pubkey
+        serialized += len(self.ticker).to_bytes(1, byteorder='little')
         serialized += self.ticker
         return serialized
 
@@ -59,7 +59,7 @@ class SystemInstructionTransfer(Instruction):
     def __init__(self, to_pubkey: bytes, ticker: int, amount: int):
         self.to_pubkey = to_pubkey
         self.ticker = ticker
-        self.data = (SystemInstruction.Transfer).to_bytes(4, byteorder='little') + (amount).to_bytes(8, byteorder='little')
+        self.data =  (amount).to_bytes(8, byteorder='little')
 
 # Cheat as we only support 1 SystemInstructionTransfer currently
 # TODO add support for multiple transfers and other instructions if the needs arises

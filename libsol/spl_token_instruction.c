@@ -62,32 +62,32 @@ static int parse_initialize_mint_spl_token_instruction(Parser* parser,
     return 0;
 }
 
-static int parse_initialize_account_spl_token_instruction(Parser* parser,
-                                                          const Instruction* instruction,
-                                                          const MessageHeader* header,
-                                                          SplTokenInitializeAccountInfo* info,
-                                                          bool expect_owner_in_accounts) {
-    InstructionAccountsIterator it;
-    instruction_accounts_iterator_init(&it, header, instruction);
+// static int parse_initialize_account_spl_token_instruction(Parser* parser,
+//                                                           const Instruction* instruction,
+//                                                           const MessageHeader* header,
+//                                                           SplTokenInitializeAccountInfo* info,
+//                                                           bool expect_owner_in_accounts) {
+//     InstructionAccountsIterator it;
+//     instruction_accounts_iterator_init(&it, header, instruction);
 
-    if (expect_owner_in_accounts) {
-        BAIL_IF(instruction->accounts_length != 4);
-    }
+//     if (expect_owner_in_accounts) {
+//         BAIL_IF(instruction->accounts_length != 4);
+//     }
 
-    BAIL_IF(instruction_accounts_iterator_next(&it, &info->token_account));
-    BAIL_IF(instruction_accounts_iterator_next(&it, &info->mint_account));
-    if (expect_owner_in_accounts) {
-        BAIL_IF(instruction_accounts_iterator_next(&it, &info->owner));
-    }
-    // Skip rent sysvar
-    BAIL_IF(instruction_accounts_iterator_next(&it, NULL));
+//     BAIL_IF(instruction_accounts_iterator_next(&it, &info->token_account));
+//     BAIL_IF(instruction_accounts_iterator_next(&it, &info->mint_account));
+//     if (expect_owner_in_accounts) {
+//         BAIL_IF(instruction_accounts_iterator_next(&it, &info->owner));
+//     }
+//     // Skip rent sysvar
+//     BAIL_IF(instruction_accounts_iterator_next(&it, NULL));
 
-    if (!expect_owner_in_accounts) {
-        BAIL_IF(parse_pubkey(parser, &info->owner));
-    }
+//     if (!expect_owner_in_accounts) {
+//         BAIL_IF(parse_pubkey(parser, &info->owner));
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
 
 static int parse_spl_token_multisigners(InstructionAccountsIterator* it,
                                         SplTokenMultisigners* signers) {
