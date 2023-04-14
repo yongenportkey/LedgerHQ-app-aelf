@@ -105,14 +105,13 @@ ux_flow_step_t const *flow_steps[MAX_FLOW_STEPS];
 // }
 
 void handle_sign_message_parse_message(volatile unsigned int *tx) {
-    PRINTF("SLI1\n");
     if (!tx ||
         (G_command.instruction != InsDeprecatedSignMessage &&
          G_command.instruction != InsSignMessage) ||
         G_command.state != ApduStatePayloadComplete) {
         THROW(ApduReplySdkInvalidParameter);
     }
-    PRINTF("SLI2\n");
+
     // Handle the transaction message signing
     Parser parser = {G_command.message, G_command.message_length};
     PrintConfig print_config;
@@ -126,18 +125,6 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
         // This is not a valid Aelf message
         THROW(ApduReplyAelfInvalidMessage);
     }
-    PRINTF("SLI3\n");
-    // Ensure the requested signer is present in the header
-    // if (scan_header_for_signer(G_command.derivation_path,
-    //                            G_command.derivation_path_length,
-    //                            &signer_index,
-    //                            header) != 0) {
-    //     PRINTF("SLI3.5\n");
-    //     THROW(ApduReplyAelfInvalidMessageHeader);
-    // }
-    // get_public_key(&signer_pubkey, G_command.derivation_path, G_command.derivation_path_length);
-    // PRINTF("SLI4\n");
-    // TODO print_config.signer_pubkey->data =(const Pubkey*)signer_pubkey;
 
     if (G_command.non_confirm) {
         // Uncomment this to allow unattended signing.
@@ -146,12 +133,10 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
         UNUSED(tx);
         THROW(ApduReplySdkNotSupported);
     }
-    PRINTF("SLI5\n");
+
     // Set the transaction summary
     transaction_summary_reset();
-    PRINTF("SLI6\n");
     if (process_message_body(parser.buffer, parser.buffer_length, &print_config) != 0) {
-        PRINTF("SLI7\n");
         // Message not processed, throw if blind signing is not enabled
         if (N_storage.settings.allow_blind_sign == BlindSignEnabled) {
             SummaryItem *item = transaction_summary_primary_item();
@@ -165,11 +150,10 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
             item = transaction_summary_general_item();
             summary_item_set_hash(item, "Message Hash", &G_command.message_hash);
         } else {
-            PRINTF("SLI8\n");
             THROW(ApduReplySdkNotSupported);
         }
     }
-    PRINTF("SLI9\n");
+
     // Add fee payer to summary if needed
     // const Pubkey *fee_payer = &header->pubkeys[0];
     // if (print_config_show_authority(&print_config, fee_payer)) {
@@ -179,11 +163,9 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
 
 void handle_sign_message_ui(volatile unsigned int *flags) {
     // Display the transaction summary
-    PRINTF("SLI10\n");
     SummaryItemKind_t summary_step_kinds[MAX_TRANSACTION_SUMMARY_ITEMS];
     size_t num_summary_steps = 0;
     if (transaction_summary_finalize(summary_step_kinds, &num_summary_steps) == 0) {
-        PRINTF("SLI11 %d\n", num_summary_steps);
         size_t num_flow_steps = 0;
 
         for (size_t i = 0; i < num_summary_steps; i++) {
@@ -196,7 +178,6 @@ void handle_sign_message_ui(volatile unsigned int *flags) {
 
         ux_flow_init(0, flow_steps, NULL);
     } else {
-        PRINTF("SLI10 ApduReplyAelfSummaryFinalizeFailed\n");
         THROW(ApduReplyAelfSummaryFinalizeFailed);
     }
 

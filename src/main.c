@@ -31,7 +31,6 @@ static void reset_main_globals(void) {
 }
 
 void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx) {
-    PRINTF("SLIN2 %d\n", tx);
     if (!flags || !tx) {
         THROW(ApduReplySdkInvalidParameter);
     }
@@ -65,7 +64,6 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
 
         case InsDeprecatedSignMessage:
         case InsSignMessage:
-            PRINTF("SLIN %d\n", G_command.instruction);
             handle_sign_message_parse_message(tx);
             handle_sign_message_ui(flags);
             break;

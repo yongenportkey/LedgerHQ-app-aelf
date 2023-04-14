@@ -84,21 +84,10 @@ typedef struct SystemInfo {
     enum SystemInstructionKind kind;
     union {
         SystemTransferInfo transfer;
-        SystemCreateAccountInfo create_account;
-        SystemCreateAccountWithSeedInfo create_account_with_seed;
-        SystemAdvanceNonceInfo advance_nonce;
-        SystemInitializeNonceInfo initialize_nonce;
-        SystemWithdrawNonceInfo withdraw_nonce;
-        SystemAuthorizeNonceInfo authorize_nonce;
-        SystemAllocateInfo allocate;
-        SystemAssignInfo assign;
-        SystemAllocateWithSeedInfo allocate_with_seed;
     };
 } SystemInfo;
 
-int parse_system_instructions(const Instruction* instruction,
-                              const MessageHeader* header,
-                              SystemInfo* info);
+int parse_system_instructions(const Instruction* instruction, SystemInfo* info);
 int print_system_info(const SystemInfo* info, const PrintConfig* print_config);
 int print_system_nonced_transaction_sentinel(const SystemInfo* info,
                                              const PrintConfig* print_config);
@@ -117,8 +106,6 @@ int print_system_allocate_with_seed_info(const char* primary_title,
 
 int parse_system_transfer_instruction(Parser* parser,
                                       const Instruction* instruction,
-                                      const MessageHeader* header,
                                       SystemTransferInfo* info);
 
-int print_system_transfer_info(const SystemTransferInfo* info,
-                               const PrintConfig* print_config);
+int print_system_transfer_info(const SystemTransferInfo* info);

@@ -53,8 +53,6 @@ typedef struct PubkeysHeader {
 typedef struct MessageHeader {
     bool versioned;
     uint8_t version;
-    // PubkeysHeader pubkeys_header;
-    // const Pubkey* pubkeys;
     const Blockhash* blockhash;
     size_t instructions_length;
 } MessageHeader;
@@ -66,7 +64,6 @@ typedef struct OffchainMessageHeader {
 } OffchainMessageHeader;
 
 static inline int parser_is_empty(Parser* parser) {
-    PRINTF("PARSER %d\n", parser->buffer_length);
     return parser->buffer_length == 0;
 }
 

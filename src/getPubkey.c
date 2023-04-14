@@ -47,7 +47,6 @@ UX_FLOW(ux_display_public_flow,
         &ux_display_public_flow_7_step);
 
 void handle_get_pubkey(volatile unsigned int *flags, volatile unsigned int *tx) {
-    PRINTF("SLIN122 ‰d", tx);
     if (!flags || !tx ||
         (G_command.instruction != InsDeprecatedGetPubkey &&
          G_command.instruction != InsGetPubkey) ||

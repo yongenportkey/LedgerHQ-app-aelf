@@ -533,27 +533,27 @@
 //     return 0;
 // }
 
-int print_transaction_nonce_processed(const PrintConfig* print_config,
-                                      InstructionInfo* const* infos,
-                                      size_t infos_length) {
-    switch (infos[0]->kind) {
-        case ProgramIdSystem:
-            return print_system_info(&(infos[0]->system), print_config);
-    }
-    return 1;
-}
+// int print_transaction_nonce_processed(const PrintConfig* print_config,
+//                                       InstructionInfo* const* infos,
+//                                       size_t infos_length) {
+//     switch (infos[0]->kind) {
+//         case ProgramIdSystem:
+//             return print_system_info(&(infos[0]->system), print_config);
+//     }
+//     return 1;
+// }
 
-int print_transaction(const PrintConfig* print_config,
-                      InstructionInfo* const* infos,
-                      size_t infos_length) {
-    // // Additional nonce info might be present at first position of in info list
-    // if ((infos_length > 1) && is_advance_nonce_account(infos[0])) {
-    //     const InstructionInfo* nonce_info = infos[0];
-    //     print_system_nonced_transaction_sentinel(&(nonce_info->system), print_config);
-    //     // offset parameters given to print_transaction_nonce_processed()
-    //     infos++;
-    //     infos_length--;
-    // }
+// int print_transaction(const PrintConfig* print_config,
+//                       InstructionInfo* const* infos,
+//                       size_t infos_length) {
+//     // // Additional nonce info might be present at first position of in info list
+//     // if ((infos_length > 1) && is_advance_nonce_account(infos[0])) {
+//     //     const InstructionInfo* nonce_info = infos[0];
+//     //     print_system_nonced_transaction_sentinel(&(nonce_info->system), print_config);
+//     //     // offset parameters given to print_transaction_nonce_processed()
+//     //     infos++;
+//     //     infos_length--;
+//     // }
 
-    return print_transaction_nonce_processed(print_config, infos, infos_length);
-}
+//     return print_transaction_nonce_processed(print_config, infos, infos_length);
+// }

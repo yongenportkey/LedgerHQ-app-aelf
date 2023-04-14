@@ -159,7 +159,7 @@ int parse_offchain_message_header(Parser* parser, OffchainMessageHeader* header)
 }
 
 int parse_data(Parser* parser, const uint8_t** data, size_t* data_length) {
-    PRINTF("datalen %d\n", data_length);
+
     BAIL_IF(parse_length(parser, data_length));
     BAIL_IF(check_buffer_length(parser, *data_length));
     *data = parser->buffer;
@@ -169,10 +169,8 @@ int parse_data(Parser* parser, const uint8_t** data, size_t* data_length) {
 
 int parse_instruction(Parser* parser, Instruction* instruction) {
     BAIL_IF(parse_data(parser, &instruction->data, &instruction->data_length));
-    PRINTF("GUI\n");
     BAIL_IF(parse_pubkey(parser, &instruction->to_pubkey));
-    PRINTF("GUI1\n");
     BAIL_IF(parse_data(parser, &instruction->ticker, &instruction->ticker_length));
-    PRINTF("GUI2 %d\n", parser->buffer_length);
+
     return 0;
 }
