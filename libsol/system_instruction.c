@@ -33,7 +33,6 @@ int print_system_info(const SystemInfo* info, const PrintConfig* print_config) {
 int parse_system_transfer_instruction(Parser* parser,
                                       const Instruction* instruction,
                                       SystemTransferInfo* info) {
-
     BAIL_IF(parse_u64(parser, &info->lamports));
     BAIL_IF(parse_pubkey(parser, &info->to));
     BAIL_IF(parse_data(parser, &instruction->ticker, &instruction->ticker_length));

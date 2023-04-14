@@ -137,9 +137,7 @@ int parse_version(Parser* parser, MessageHeader* header) {
 }
 
 int parse_message_header(Parser* parser, MessageHeader* header) {
-    // BAIL_IF(parse_version(parser, header));
     BAIL_IF(parse_blockhash(parser, &header->blockhash));
-    // BAIL_IF(parse_length(parser, &header->instructions_length));
     return 0;
 }
 
