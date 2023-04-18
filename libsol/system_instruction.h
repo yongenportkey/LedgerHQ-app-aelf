@@ -39,6 +39,15 @@ typedef struct SystemTransferInfo {
     uint64_t lamports;
 } SystemTransferInfo;
 
+typedef struct SystemGetTxResultInfo {
+    const Pubkey* from;
+    const Pubkey* chain;
+    uint64_t ref_block_number;
+    uint64_t method_name;
+    const Pubkey* to;
+    uint64_t lamports;
+} SystemGetTxResultInfo;
+
 typedef struct SystemAdvanceNonceInfo {
     const Pubkey* account;
     const Pubkey* authority;
@@ -84,10 +93,11 @@ typedef struct SystemInfo {
     enum SystemInstructionKind kind;
     union {
         SystemTransferInfo transfer;
+        SystemGetTxResultInfo getTxResult;
     };
 } SystemInfo;
 
-int parse_system_instructions(const Instruction* instruction, SystemInfo* info);
+// int parse_system_instructions(const Instruction* instruction, SystemInfo* info);
 int print_system_info(const SystemInfo* info, const PrintConfig* print_config);
 int print_system_nonced_transaction_sentinel(const SystemInfo* info,
                                              const PrintConfig* print_config);
@@ -108,4 +118,10 @@ int parse_system_transfer_instruction(Parser* parser,
                                       const Instruction* instruction,
                                       SystemTransferInfo* info);
 
+int parse_system_get_tx_result_instruction(Parser* parser,
+                                           const Instruction* instruction,
+                                           SystemGetTxResultInfo* info);
+
 int print_system_transfer_info(const SystemTransferInfo* info);
+
+int print_system_get_tx_result_info(const SystemGetTxResultInfo* info);

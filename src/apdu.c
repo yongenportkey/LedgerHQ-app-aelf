@@ -65,6 +65,7 @@ int apdu_handle_message(const uint8_t* apdu_message,
         case InsGetAppConfiguration:
         case InsGetPubkey:
         case InsSignMessage:
+        case InsGetTxResult:
         case InsSignOffchainMessage: {
             // must at least hold a full modern header
             if (apdu_message_len < OFFSET_CDATA) {

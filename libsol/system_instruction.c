@@ -33,24 +33,37 @@ int print_system_info(const SystemInfo* info, const PrintConfig* print_config) {
 int parse_system_transfer_instruction(Parser* parser,
                                       const Instruction* instruction,
                                       SystemTransferInfo* info) {
-    BAIL_IF(parse_u64(parser, &info->lamports));
     BAIL_IF(parse_pubkey(parser, &info->to));
     BAIL_IF(parse_data(parser, &instruction->ticker, &instruction->ticker_length));
+    BAIL_IF(parse_u64(parser, &info->lamports));
     return 0;
 }
 
-int parse_system_instructions(const Instruction* instruction, SystemInfo* info) {
-    Parser parser = {instruction->data, instruction->data_length};
-
-    BAIL_IF(parse_system_instruction_kind(&parser, &info->kind));
-
-    switch (info->kind) {
-        case SystemTransfer:
-            return parse_system_transfer_instruction(&parser, instruction, &info->transfer);
-    }
-
-    return 1;
+int parse_system_get_tx_result_instruction(Parser* parser,
+                                           const Instruction* instruction,
+                                           SystemGetTxResultInfo* info) {
+    BAIL_IF(parse_pubkey(parser, &info->from));
+    BAIL_IF(parse_pubkey(parser, &info->chain));
+    BAIL_IF(parse_data(parser, &info->ref_block_number, &instruction->ref_block_number_length));
+    BAIL_IF(parse_data(parser, &info->method_name, &instruction->method_name_length));
+    BAIL_IF(parse_pubkey(parser, &info->to));
+    BAIL_IF(parse_data(parser, &instruction->ticker, &instruction->ticker_length));
+    BAIL_IF(parse_u64(parser, &info->lamports));
+    return 0;
 }
+
+// int parse_system_instructions(const Instruction* instruction, SystemInfo* info) {
+//     Parser parser = {instruction->data, instruction->data_length};
+
+//     BAIL_IF(parse_system_instruction_kind(&parser, &info->kind));
+
+//     switch (info->kind) {
+//         case SystemTransfer:
+//             return parse_system_transfer_instruction(&parser, instruction, &info->transfer);
+//     }
+
+//     return 1;
+// }
 
 int print_system_transfer_info(const SystemTransferInfo* info) {
     SummaryItem* item;
@@ -60,6 +73,33 @@ int print_system_transfer_info(const SystemTransferInfo* info) {
 
     item = transaction_summary_general_item();
     summary_item_set_pubkey(item, "Recipient", info->to);
+
+    return 0;
+}
+
+int print_system_get_tx_result_info(const SystemGetTxResultInfo* info) {
+    SummaryItem* item;
+
+    item = transaction_summary_primary_item();
+    summary_item_set_string(item, "Get Transaction", "Result");
+
+    item = transaction_summary_general_item();
+    summary_item_set_pubkey(item, "From", info->from);
+
+    item = transaction_summary_general_item();
+    summary_item_set_pubkey(item, "Chain address", info->chain);
+    
+    item = transaction_summary_general_item();
+    summary_item_set_i64(item, "Ref block number", info->ref_block_number);
+
+    item = transaction_summary_general_item();
+    summary_item_set_i64(item, "Method name", info->method_name);
+
+    item = transaction_summary_general_item();
+    summary_item_set_pubkey(item, "Recipient", info->to);
+
+    item = transaction_summary_general_item();
+    summary_item_set_amount(item, "Amount", info->lamports);
 
     return 0;
 }

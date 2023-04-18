@@ -10,6 +10,7 @@
 #include "vote_instruction.h"
 #include "transaction_printers.h"
 #include "util.h"
+#include "globals.h"
 #include <string.h>
 
 // change this if you want to be able to add succesive tx
@@ -17,7 +18,8 @@
 
 int process_message_body(const uint8_t* message_body,
                          int message_body_length,
-                         const PrintConfig* print_config) {
+                         const PrintConfig* print_config,
+                         int ins_code) {
     const MessageHeader* header = &print_config->header;
 
     size_t instruction_count = 0;
@@ -31,7 +33,15 @@ int process_message_body(const uint8_t* message_body,
     Instruction instruction;
     InstructionInfo* info = &instruction_info[instruction_count];
 
-    parse_system_transfer_instruction(&parser, &instruction, &info->system.transfer);
+    switch (ins_code) {
+        case InsSignMessage:
+            parse_system_transfer_instruction(&parser, &instruction, &info->system.transfer);
+            break;
+        case InsGetTxResult:
+            parse_system_get_tx_result_instruction(&parser, &instruction, &info->system.getTxResult);
+            break;
+    };
+
     switch (info->kind) {
         case ProgramIdSystem:
             display_instruction_info[display_instruction_count++] = info;
@@ -46,5 +56,10 @@ int process_message_body(const uint8_t* message_body,
         BAIL_IF(instruction_info[i].kind == ProgramIdUnknown);
     }
 
-    return print_system_transfer_info(&display_instruction_info[0]->system.transfer);
+    switch (ins_code) {
+        case InsSignMessage:
+            return print_system_transfer_info(&display_instruction_info[0]->system.transfer);
+        case InsGetTxResult:
+            return print_system_get_tx_result_info(&display_instruction_info[0]->system.getTxResult);
+    };
 }

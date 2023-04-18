@@ -12,59 +12,59 @@
 #include "globals.h"
 #include "apdu.h"
 
-static uint8_t set_result_sign_message() {
-    uint8_t signature[SIGNATURE_LENGTH];
-    cx_ecfp_private_key_t privateKey;
-    BEGIN_TRY {
-        TRY {
-            get_private_key_with_seed(&privateKey,
-                                      G_command.derivation_path,
-                                      G_command.derivation_path_length);
-            cx_eddsa_sign(&privateKey,
-                          CX_LAST,
-                          CX_SHA512,
-                          G_command.message,
-                          G_command.message_length,
-                          NULL,
-                          0,
-                          signature,
-                          SIGNATURE_LENGTH,
-                          NULL);
-            memcpy(G_io_apdu_buffer, signature, SIGNATURE_LENGTH);
-        }
-        CATCH_OTHER(e) {
-            MEMCLEAR(privateKey);
-            THROW(e);
-        }
-        FINALLY {
-            MEMCLEAR(privateKey);
-        }
-    }
-    END_TRY;
-    return SIGNATURE_LENGTH;
-}
+// static uint8_t set_result_sign_message() {
+//     uint8_t signature[SIGNATURE_LENGTH];
+//     cx_ecfp_private_key_t privateKey;
+//     BEGIN_TRY {
+//         TRY {
+//             get_private_key_with_seed(&privateKey,
+//                                       G_command.derivation_path,
+//                                       G_command.derivation_path_length);
+//             cx_eddsa_sign(&privateKey,
+//                           CX_LAST,
+//                           CX_SHA512,
+//                           G_command.message,
+//                           G_command.message_length,
+//                           NULL,
+//                           0,
+//                           signature,
+//                           SIGNATURE_LENGTH,
+//                           NULL);
+//             memcpy(G_io_apdu_buffer, signature, SIGNATURE_LENGTH);
+//         }
+//         CATCH_OTHER(e) {
+//             MEMCLEAR(privateKey);
+//             THROW(e);
+//         }
+//         FINALLY {
+//             MEMCLEAR(privateKey);
+//         }
+//     }
+//     END_TRY;
+//     return SIGNATURE_LENGTH;
+// }
 
-static void send_result_sign_message(void) {
-    sendResponse(set_result_sign_message(), true);
-}
+// static void send_result_sign_message(void) {
+//     sendResponse(set_result_sign_message(), true);
+// }
 
 //////////////////////////////////////////////////////////////////////
 
-UX_STEP_CB(ux_approve_step,
-           pb,
-           send_result_sign_message(),
-           {
-               &C_icon_validate_14,
-               "Approve",
-           });
-UX_STEP_CB(ux_reject_step,
-           pb,
-           sendResponse(0, false),
-           {
-               &C_icon_crossmark,
-               "Reject",
-           });
-UX_STEP_NOCB_INIT(ux_summary_step,
+// UX_STEP_CB(ux_approve_step,
+//            pb,
+//            send_result_sign_message(),
+//            {
+//                &C_icon_validate_14,
+//                "Approve",
+//            });
+// UX_STEP_CB(ux_reject_step,
+//            pb,
+//            sendResponse(0, false),
+//            {
+//                &C_icon_crossmark,
+//                "Reject",
+//            });
+UX_STEP_NOCB_INIT(ux_summary_get_tx_result_step,
                   bnnn_paging,
                   {
                       size_t step_index = G_ux.flow_stack[stack_slot].index;
@@ -82,14 +82,17 @@ UX_STEP_NOCB_INIT(ux_summary_step,
                   });
 
 #define MAX_FLOW_STEPS                                     \
-    (MAX_TRANSACTION_SUMMARY_ITEMS + 1 /* approve */       \
-     + 1                               /* reject */        \
+    (MAX_TRANSACTION_SUMMARY_ITEMS     /* approve + 1 */   \
+                                       /* reject  + 1  */  \
      + 1                               /* FLOW_END_STEP */ \
     )
 ux_flow_step_t static const *flow_steps[MAX_FLOW_STEPS];
 
-void handle_sign_message_parse_message(volatile unsigned int *tx) {
-    if (!tx || G_command.state != ApduStatePayloadComplete) {
+void handle_get_tx_result_parse(volatile unsigned int *tx) {
+    if (!tx ||
+        (G_command.instruction != InsDeprecatedSignMessage &&
+         G_command.instruction != InsSignMessage) ||
+        G_command.state != ApduStatePayloadComplete) {
         THROW(ApduReplySdkInvalidParameter);
     }
 
@@ -99,8 +102,8 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
     print_config.expert_mode = (N_storage.settings.display_mode == DisplayModeExpert);
     print_config.signer_pubkey = NULL;
     MessageHeader *header = &print_config.header;
-    size_t signer_index;
-    uint8_t signer_pubkey[PUBKEY_SIZE];
+    // size_t signer_index;
+    // uint8_t signer_pubkey[PUBKEY_SIZE];
 
     if (parse_message_header(&parser, header) != 0) {
         // This is not a valid Aelf message
@@ -142,7 +145,7 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
     // }
 }
 
-void handle_sign_message_ui(volatile unsigned int *flags) {
+void handle_get_tx_result_ui(volatile unsigned int *flags) {
     // Display the transaction summary
     SummaryItemKind_t summary_step_kinds[MAX_TRANSACTION_SUMMARY_ITEMS];
     size_t num_summary_steps = 0;
@@ -150,11 +153,11 @@ void handle_sign_message_ui(volatile unsigned int *flags) {
         size_t num_flow_steps = 0;
 
         for (size_t i = 0; i < num_summary_steps; i++) {
-            flow_steps[num_flow_steps++] = &ux_summary_step;
+            flow_steps[num_flow_steps++] = &ux_summary_get_tx_result_step;
         }
 
-        flow_steps[num_flow_steps++] = &ux_approve_step;
-        flow_steps[num_flow_steps++] = &ux_reject_step;
+        // flow_steps[num_flow_steps++] = &ux_approve_step;
+        // flow_steps[num_flow_steps++] = &ux_reject_step;
         flow_steps[num_flow_steps++] = FLOW_END_STEP;
 
         ux_flow_init(0, flow_steps, NULL);

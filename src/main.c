@@ -19,6 +19,7 @@
 #include "getPubkey.h"
 #include "signTransfer.h"
 #include "signOffchainMessage.h"
+// #include "getTxResult.h"
 #include "apdu.h"
 #include "menu.h"
 
@@ -61,12 +62,18 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
         case InsGetPubkey:
             handle_get_pubkey(flags, tx);
             break;
-
+        
         case InsDeprecatedSignMessage:
         case InsSignMessage:
+        case InsGetTxResult:
             handle_sign_message_parse_message(tx);
             handle_sign_message_ui(flags);
             break;
+
+        // case InsGetTxResult:
+        //     handle_get_tx_result_parse(tx);
+        //     handle_get_tx_result_ui(flags);
+        //     break;
 
         case InsSignOffchainMessage:
             handle_sign_offchain_message(flags, tx);

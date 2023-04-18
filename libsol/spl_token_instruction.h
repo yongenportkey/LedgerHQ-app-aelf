@@ -136,9 +136,9 @@ typedef struct SplTokenInfo {
     };
 } SplTokenInfo;
 
-int parse_spl_token_instructions(const Instruction* instruction,
-                                 const MessageHeader* header,
-                                 SplTokenInfo* info);
+// int parse_spl_token_instructions(const Instruction* instruction,
+//                                  const MessageHeader* header,
+//                                  SplTokenInfo* info);
 int print_spl_token_info(const SplTokenInfo* info, const PrintConfig* print_config);
 void summary_item_set_multisig_m_of_n(SummaryItem* item, uint8_t m, uint8_t n);
 

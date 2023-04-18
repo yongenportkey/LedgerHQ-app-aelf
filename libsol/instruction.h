@@ -26,8 +26,8 @@ typedef struct InstructionInfo {
     };
 } InstructionInfo;
 
-enum ProgramId instruction_program_id(const Instruction* instruction, const MessageHeader* header);
-int instruction_validate(const Instruction* instruction, const MessageHeader* header);
+// enum ProgramId instruction_program_id(const Instruction* instruction, const MessageHeader* header);
+// int instruction_validate(const Instruction* instruction, const MessageHeader* header);
 
 typedef struct InstructionBrief {
     enum ProgramId program_id;
@@ -63,9 +63,9 @@ typedef struct InstructionAccountsIterator {
     size_t current_instruction_account;
 } InstructionAccountsIterator;
 
-void instruction_accounts_iterator_init(InstructionAccountsIterator* it,
-                                        const MessageHeader* header,
-                                        const Instruction* instruction);
+// void instruction_accounts_iterator_init(InstructionAccountsIterator* it,
+                                        // const MessageHeader* header,
+                                        // const Instruction* instruction);
 
 int instruction_accounts_iterator_next(InstructionAccountsIterator* it,
                                        const Pubkey** next_account);

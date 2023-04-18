@@ -14,8 +14,8 @@ class INS(IntEnum):
     # END DEPRECATED
     INS_GET_APP_CONFIGURATION = 0x04
     INS_GET_PUBKEY = 0x05
-    INS_SIGN_MESSAGE = 0x06
-    INS_SIGN_OFFCHAIN_MESSAGE = 0x07
+    INS_SIGN_TRANSFER = 0x06
+    INS_GET_TX_RESULT = 0x07
 
 
 CLA = 0xE0
@@ -97,13 +97,13 @@ class AelfClient:
 
 
     def send_first_message_batch(self, messages: List[bytes], p1: int) -> RAPDU:
-        self._client.exchange(CLA, INS.INS_SIGN_MESSAGE, p1, P2_MORE, messages[0])
+        self._client.exchange(CLA, INS.INS_SIGN_TRANSFER, p1, P2_MORE, messages[0])
         for m in messages[1:]:
-            self._client.exchange(CLA, INS.INS_SIGN_MESSAGE, p1, P2_MORE | P2_EXTEND, m)
+            self._client.exchange(CLA, INS.INS_SIGN_TRANSFER, p1, P2_MORE | P2_EXTEND, m)
 
 
     @contextmanager
-    def send_async_sign_message(self,
+    def send_async_sign_transfer(self,
                                 derivation_path : bytes,
                                 message: bytes) -> Generator[None, None, None]:
         message_splited_prefixed = self.split_and_prefix_message(derivation_path, message)
@@ -117,11 +117,32 @@ class AelfClient:
             final_p2 = 0
 
         with self._client.exchange_async(CLA,
-                                         INS.INS_SIGN_MESSAGE,
+                                         INS.INS_SIGN_TRANSFER,
                                          P1_CONFIRM,
                                          final_p2,
                                          message_splited_prefixed[-1]):
             yield
+
+    @contextmanager
+    def send_async_get_tx_result(self,
+                                    derivation_path : bytes,
+                                    message: bytes) -> Generator[None, None, None]:
+            message_splited_prefixed = self.split_and_prefix_message(derivation_path, message)
+
+            # Send all chunks with P2_MORE except for the last chunk
+            # Send all chunks with P2_EXTEND except for the first chunk
+            if len(message_splited_prefixed) > 1:
+                final_p2 = P2_EXTEND
+                self.send_first_message_batch(message_splited_prefixed[:-1], P1_CONFIRM)
+            else:
+                final_p2 = 0
+
+            with self._client.exchange_async(CLA,
+                                            INS.INS_GET_TX_RESULT,
+                                            P1_CONFIRM,
+                                            final_p2,
+                                            message_splited_prefixed[-1]):
+                yield
 
 
     def get_async_response(self) -> RAPDU:
@@ -140,7 +161,7 @@ class AelfClient:
             final_p2 = 0
 
         return self._client.exchange(CLA,
-                                     INS.INS_SIGN_MESSAGE,
+                                     INS.INS_SIGN_TRANSFER,
                                      P1_NON_CONFIRM,
                                      final_p2,
                                      message_splited_prefixed[-1])

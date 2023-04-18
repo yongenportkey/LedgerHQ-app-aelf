@@ -39,14 +39,20 @@ FOREIGN_PUBLIC_KEY_2    = base58.b58decode_check(FOREIGN_ADDRESS_2)
 OWNED_ADDRESS       = b'CRuQygxHeZLvfMFLbZQVvs6DMeWe3Jn9m3yDiCF5JgmdWAiLN'
 OWNED_PUBLIC_KEY    = base58.b58decode_check(OWNED_ADDRESS)
 
+CHAIN_ADDRESS       = b'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE'
+CHAIN_PUBLIC_KEY    = base58.b58decode_check(OWNED_ADDRESS)
 
-### Proposed Solana derivation paths for tests ###
+### Proposed AELF derivation paths for tests ###
 
 ELF_PACKED_DERIVATION_PATH      = pack_derivation_path("m/44'/1616'/12345'")
 ELF_PACKED_DERIVATION_PATH_2    = pack_derivation_path("m/44'/1616'/0'/0'")
 
+### Transaction info
+
+TICKER = b'ELF'
+METHOD_NAME = b"Transfer"
+REF_BLOCK_NUMBER = b"153305643"
 
 ### Package this currency configuration in exchange format ###
 
 ELF_CONF = create_currency_config("ELF", "AELF")
-TICKER = b'ELF'

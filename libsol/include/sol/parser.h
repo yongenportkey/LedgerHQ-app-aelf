@@ -36,13 +36,18 @@ typedef struct Hash {
 typedef struct Hash Blockhash;
 
 typedef struct Instruction {
+    const Pubkey* from_pubkey;
+    const Pubkey* chain_pubkey;
+    size_t ref_block_number_length;
+    const uint8_t* ref_block_number;
+    size_t method_name_length;
+    const uint8_t* method_name;
+    const Pubkey* to_pubkey;
+    size_t ticker_length;
+    const uint8_t* ticker;
     const uint8_t* data;
     size_t data_length;
-    const Pubkey* to_pubkey;
-    const uint8_t* ticker;
-    size_t ticker_length;
 } Instruction;
-
 typedef struct PubkeysHeader {
     uint8_t num_required_signatures;
     uint8_t num_readonly_signed_accounts;
@@ -94,7 +99,7 @@ int parse_message_header(Parser* parser, MessageHeader* header);
 
 int parse_offchain_message_header(Parser* parser, OffchainMessageHeader* header);
 
-int parse_instruction(Parser* parser, Instruction* instruction);
+// int parse_instruction(Parser* parser, Instruction* instruction);
 
 int parse_data(Parser* parser, const uint8_t** data, size_t* data_length);
 

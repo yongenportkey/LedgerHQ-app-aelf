@@ -165,10 +165,10 @@ int parse_data(Parser* parser, const uint8_t** data, size_t* data_length) {
     return 0;
 }
 
-int parse_instruction(Parser* parser, Instruction* instruction) {
-    BAIL_IF(parse_data(parser, &instruction->data, &instruction->data_length));
-    BAIL_IF(parse_pubkey(parser, &instruction->to_pubkey));
-    BAIL_IF(parse_data(parser, &instruction->ticker, &instruction->ticker_length));
+// int parse_instruction(Parser* parser, Instruction* instruction) {
+//     BAIL_IF(parse_data(parser, &instruction->data, &instruction->data_length));
+//     BAIL_IF(parse_pubkey(parser, &instruction->to_pubkey));
+//     BAIL_IF(parse_data(parser, &instruction->ticker, &instruction->ticker_length));
 
-    return 0;
-}
+//     return 0;
+// }

@@ -21,9 +21,9 @@ typedef struct SplAssociatedTokenAccountInfo {
     };
 } SplAssociatedTokenAccountInfo;
 
-int parse_spl_associated_token_account_instructions(const Instruction* instruction,
-                                                    const MessageHeader* header,
-                                                    SplAssociatedTokenAccountInfo* info);
+// int parse_spl_associated_token_account_instructions(const Instruction* instruction,
+//                                                     const MessageHeader* header,
+//                                                     SplAssociatedTokenAccountInfo* info);
 
 int print_spl_associated_token_account_info(const SplAssociatedTokenAccountInfo* info,
                                             const PrintConfig* print_config);
