@@ -82,7 +82,7 @@ int print_system_get_tx_result_info(const SystemGetTxResultInfo* info) {
     SummaryItem* item;
 
     item = transaction_summary_primary_item();
-    summary_item_set_string(item, "Get Transaction", "Result");
+    summary_item_set_string(item, "Type", "Get Transaction result");
 
     item = transaction_summary_general_item();
     summary_item_set_pubkey(item, "From", info->from);
