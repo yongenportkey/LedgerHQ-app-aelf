@@ -1,8 +1,4 @@
 #include "instruction.h"
-#include "serum_assert_owner_instruction.h"
-#include "spl_memo_instruction.h"
-#include "spl_token_instruction.h"
-#include "stake_instruction.h"
 #include "system_instruction.h"
 #include "util.h"
 #include <string.h>
@@ -36,27 +32,27 @@
 //     return 0;
 // }
 
-bool instruction_info_matches_brief(const InstructionInfo* info, const InstructionBrief* brief) {
-    if (brief->program_id == info->kind) {
-        switch (brief->program_id) {
-            case ProgramIdSystem:
-                return (brief->system == info->system.kind);
-        }
-    }
-    return false;
-}
+// bool instruction_info_matches_brief(const InstructionInfo* info, const InstructionBrief* brief) {
+//     if (brief->program_id == info->kind) {
+//         switch (brief->program_id) {
+//             case ProgramIdSystem:
+//                 return (brief->system == info->system.kind);
+//         }
+//     }
+//     return false;
+// }
 
-bool instruction_infos_match_briefs(InstructionInfo* const* infos,
-                                    const InstructionBrief* briefs,
-                                    size_t len) {
-    size_t i;
-    for (i = 0; i < len; i++) {
-        if (!instruction_info_matches_brief(infos[i], &briefs[i])) {
-            break;
-        }
-    }
-    return (i == len);
-}
+// bool instruction_infos_match_briefs(InstructionInfo* const* infos,
+//                                     const InstructionBrief* briefs,
+//                                     size_t len) {
+//     size_t i;
+//     for (i = 0; i < len; i++) {
+//         if (!instruction_info_matches_brief(infos[i], &briefs[i])) {
+//             break;
+//         }
+//     }
+//     return (i == len);
+// }
 
 // void instruction_accounts_iterator_init(InstructionAccountsIterator* it,
 //                                         const MessageHeader* header,
@@ -67,21 +63,21 @@ bool instruction_infos_match_briefs(InstructionInfo* const* infos,
 //     it->current_instruction_account = 0;
 // }
 
-int instruction_accounts_iterator_next(InstructionAccountsIterator* it,
-                                       const Pubkey** next_account) {
-    if (it->current_instruction_account < it->instruction_accounts_length) {
-        size_t pubkeys_index = it->instruction_accounts[it->current_instruction_account++];
-        if (next_account) {
-            *next_account = &it->message_header_pubkeys[pubkeys_index];
-        }
-        return 0;
-    }
-    return 1;
-}
+// int instruction_accounts_iterator_next(InstructionAccountsIterator* it,
+//                                        const Pubkey** next_account) {
+//     if (it->current_instruction_account < it->instruction_accounts_length) {
+//         size_t pubkeys_index = it->instruction_accounts[it->current_instruction_account++];
+//         if (next_account) {
+//             *next_account = &it->message_header_pubkeys[pubkeys_index];
+//         }
+//         return 0;
+//     }
+//     return 1;
+// }
 
-size_t instruction_accounts_iterator_remaining(const InstructionAccountsIterator* it) {
-    if (it->current_instruction_account < it->instruction_accounts_length) {
-        return it->instruction_accounts_length - it->current_instruction_account;
-    }
-    return 0;
-}
+// size_t instruction_accounts_iterator_remaining(const InstructionAccountsIterator* it) {
+//     if (it->current_instruction_account < it->instruction_accounts_length) {
+//         return it->instruction_accounts_length - it->current_instruction_account;
+//     }
+//     return 0;
+// }

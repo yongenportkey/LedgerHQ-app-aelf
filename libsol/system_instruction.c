@@ -1,4 +1,3 @@
-#include "common_byte_strings.h"
 #include "instruction.h"
 #include "sol/parser.h"
 #include "sol/transaction_summary.h"
@@ -6,7 +5,7 @@
 #include "util.h"
 #include <string.h>
 
-const Pubkey system_program_id = {{PROGRAM_ID_SYSTEM}};
+// const Pubkey system_program_id = {{PROGRAM_ID_SYSTEM}};
 
 static int parse_system_instruction_kind(Parser* parser, enum SystemInstructionKind* kind) {
     uint32_t maybe_kind;
