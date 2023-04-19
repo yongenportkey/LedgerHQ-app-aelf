@@ -36,13 +36,8 @@ typedef struct Hash {
 typedef struct Hash Blockhash;
 
 typedef struct Instruction {
-    uint64_t method_name_length;
-    const uint8_t* method_name;
-    const Pubkey* to_pubkey;
     size_t ticker_length;
     const uint8_t* ticker;
-    const uint8_t* data;
-    size_t data_length;
 } Instruction;
 
 typedef struct MessageHeader {
@@ -76,8 +71,6 @@ int parse_blockhash(Parser* parser, const Hash** hash);
 #define parse_blockhash parse_hash
 
 int parse_message_header(Parser* parser, MessageHeader* header);
-
-// int parse_instruction(Parser* parser, Instruction* instruction);
 
 int parse_data(Parser* parser, const uint8_t** data, size_t* data_length);
 

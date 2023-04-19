@@ -11,9 +11,7 @@
 
 int process_message_body(const uint8_t* message_body,
                          int message_body_length,
-                         const PrintConfig* print_config,
                          int ins_code) {
-    const MessageHeader* header = &print_config->header;
 
     size_t instruction_count = 0;
     InstructionInfo instruction_info[MAX_INSTRUCTIONS];
@@ -45,4 +43,5 @@ int process_message_body(const uint8_t* message_body,
         case InsGetTxResult:
             return print_system_get_tx_result_info(&display_instruction_info[0]->getTxResult);
     };
+    return 1;
 }

@@ -99,8 +99,6 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
     print_config.expert_mode = (N_storage.settings.display_mode == DisplayModeExpert);
     print_config.signer_pubkey = NULL;
     MessageHeader *header = &print_config.header;
-    size_t signer_index;
-    uint8_t signer_pubkey[PUBKEY_SIZE];
 
     if (parse_message_header(&parser, header) != 0) {
         // This is not a valid Aelf message
@@ -117,7 +115,7 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
 
     // Set the transaction summary
     transaction_summary_reset();
-    if (process_message_body(parser.buffer, parser.buffer_length, &print_config, G_command.instruction) != 0) {
+    if (process_message_body(parser.buffer, parser.buffer_length, G_command.instruction) != 0) {
         // Message not processed, throw if blind signing is not enabled
         if (N_storage.settings.allow_blind_sign == BlindSignEnabled) {
             SummaryItem *item = transaction_summary_primary_item();
