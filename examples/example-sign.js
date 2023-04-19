@@ -303,7 +303,7 @@ async function solanaLedgerSignOffchainMessage(
   const ix = solana.SystemProgram.transfer({
     fromPubkey: from_pubkey,
     toPubkey: to_pubkey,
-    lamports: 42,
+    amount: 42,
   });
 
   // XXX: Fake blockhash so this example doesn't need a

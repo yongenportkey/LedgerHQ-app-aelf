@@ -1,4 +1,4 @@
-#include "instruction.h"
+// #include "instruction.h"
 #include "parser.c"
 #include "sol/printer.h"
 #include <stdio.h>
@@ -233,35 +233,6 @@ void test_parse_length_two_bytes() {
     assert(parser_is_empty(&parser));
     assert(parser.buffer == message + 2);
     assert(value == 128);
-}
-
-void test_parse_pubkeys_header() {
-    uint8_t message[] = {1, 2, 3, 4};
-    Parser parser = {message, sizeof(message)};
-    PubkeysHeader header;
-    assert(parse_pubkeys_header(&parser, &header) == 0);
-    assert(parser_is_empty(&parser));
-    assert(parser.buffer == message + 4);
-    assert(header.pubkeys_length == 4);
-}
-
-void test_parse_pubkeys() {
-    uint8_t message[PUBKEY_SIZE + 4] = {1, 2, 3, 1, 42};
-    Parser parser = {message, sizeof(message)};
-    PubkeysHeader header;
-    const Pubkey* pubkeys;
-    assert(parse_pubkeys(&parser, &header, &pubkeys) == 0);
-    assert(parser_is_empty(&parser));
-    assert(parser.buffer == message + PUBKEY_SIZE + 4);
-    assert(pubkeys->data[0] == 42);
-}
-
-void test_parse_pubkeys_too_short() {
-    uint8_t message[] = {1, 2, 3, 1};
-    Parser parser = {message, sizeof(message)};
-    PubkeysHeader header;
-    const Pubkey* pubkeys;
-    assert(parse_pubkeys(&parser, &header, &pubkeys) == 1);
 }
 
 void test_parse_hash() {

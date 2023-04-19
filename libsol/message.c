@@ -2,8 +2,6 @@
 #include "sol/parser.h"
 #include "sol/message.h"
 #include "sol/print_config.h"
-#include "system_instruction.h"
-#include "transaction_printers.h"
 #include "util.h"
 #include "globals.h"
 #include <string.h>
@@ -30,31 +28,21 @@ int process_message_body(const uint8_t* message_body,
 
     switch (ins_code) {
         case InsSignMessage:
-            parse_system_transfer_instruction(&parser, &instruction, &info->system.transfer);
+            parse_system_transfer_instruction(&parser, &instruction, &info->transfer);
             break;
         case InsGetTxResult:
-            parse_system_get_tx_result_instruction(&parser, &instruction, &info->system.getTxResult);
+            parse_system_get_tx_result_instruction(&parser, &instruction, &info->getTxResult);
             break;
     };
 
-    switch (info->kind) {
-        case ProgramIdSystem:
-            display_instruction_info[display_instruction_count++] = info;
-            break;
-    }
-
+    display_instruction_info[display_instruction_count++] = info;
     // Ensure we've consumed the entire message body
     BAIL_IF(!parser_is_empty(&parser));
 
-    // If we don't know about all of the instructions, bail
-    for (size_t i = 0; i < instruction_count; i++) {
-        BAIL_IF(instruction_info[i].kind == ProgramIdUnknown);
-    }
-
     switch (ins_code) {
         case InsSignMessage:
-            return print_system_transfer_info(&display_instruction_info[0]->system.transfer);
+            return print_system_transfer_info(&display_instruction_info[0]->transfer);
         case InsGetTxResult:
-            return print_system_get_tx_result_info(&display_instruction_info[0]->system.getTxResult);
+            return print_system_get_tx_result_info(&display_instruction_info[0]->getTxResult);
     };
 }
