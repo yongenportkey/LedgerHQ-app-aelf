@@ -65,8 +65,7 @@ int apdu_handle_message(const uint8_t* apdu_message,
         case InsGetAppConfiguration:
         case InsGetPubkey:
         case InsSignMessage:
-        case InsGetTxResult:
-        case InsSignOffchainMessage: {
+        case InsGetTxResult: {
             // must at least hold a full modern header
             if (apdu_message_len < OFFSET_CDATA) {
                 return ApduReplyAelfInvalidMessageSize;
@@ -109,8 +108,7 @@ int apdu_handle_message(const uint8_t* apdu_message,
         apdu_command->deprecated_host = header.deprecated_host;
         return 0;
     } else if (header.instruction == InsDeprecatedSignMessage ||
-               header.instruction == InsSignMessage ||
-               header.instruction == InsSignOffchainMessage) {
+               header.instruction == InsSignMessage) {
         if (!first_data_chunk) {
             // validate the command in progress
             if (apdu_command->state != ApduStatePayloadInProgress ||

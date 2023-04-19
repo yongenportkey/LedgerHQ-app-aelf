@@ -50,7 +50,6 @@ typedef enum InstructionCode {
     InsGetPubkey = 0x05,
     InsSignMessage = 0x06,
     InsGetTxResult = 0x07,
-    InsSignOffchainMessage = 0x08
 } InstructionCode;
 
 // display stepped screens

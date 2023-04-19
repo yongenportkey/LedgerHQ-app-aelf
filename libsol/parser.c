@@ -3,7 +3,7 @@
 
 #define OFFCHAIN_MESSAGE_SIGNING_DOMAIN \
     "\xff"                              \
-    "solana offchain"
+    "aelf offchain"
 
 static int check_buffer_length(Parser* parser, size_t num) {
     return parser->buffer_length < num ? 1 : 0;

@@ -1,7 +1,7 @@
 # Aelf application : Common Technical Specifications
 ## About
 
-This application describes the APDU messages interface to communicate with the Solana application.
+This application describes the APDU messages interface to communicate with the Aelf application.
 
 The application covers the following functionalities :
 

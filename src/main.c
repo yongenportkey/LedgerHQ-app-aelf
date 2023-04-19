@@ -18,7 +18,6 @@
 #include "utils.h"
 #include "getPubkey.h"
 #include "signMessage.h"
-#include "signOffchainMessage.h"
 #include "apdu.h"
 #include "menu.h"
 
@@ -67,10 +66,6 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
         case InsGetTxResult:
             handle_sign_message_parse_message(tx);
             handle_sign_message_ui(flags);
-            break;
-
-        case InsSignOffchainMessage:
-            handle_sign_offchain_message(flags, tx);
             break;
 
         default:
