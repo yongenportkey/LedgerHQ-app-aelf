@@ -5,9 +5,7 @@ This application describes the APDU messages interface to communicate with the A
 
 The application covers the following functionalities :
 
-- Retrieve an address given an account number
 - Sign Aelf transaction
-- Sign off-chain message
 
 The application interface can be accessed over HID or BLE
 
@@ -23,7 +21,7 @@ _This command returns specific application configuration_
 
 | _CLA_ | _INS_ | _P1_ | _P2_ | _Lc_ | _Le_ |
 | ----- | :---: | ---: | ---- | :--: | ---: |
-| E0    |  04   |   00 | 00   |  00  |   04 |
+| E0    |  01   |   00 | 00   |  00  |   04 |
 
 ##### Input data
 
@@ -49,7 +47,7 @@ _This command returns a Aelf pubkey for the given BIP 32 path_
 
 | _CLA_ | _INS_ | _P1_ | _P2_ |   _Lc_   |     _Le_ |
 | ----- | :---: | ---: | ---- | :------: | -------: |
-| E0    |  05   |   00 | 00   | variable | variable |
+| E0    |  02   |   00 | 00   | variable | variable |
 
 ##### Input data
 
@@ -66,7 +64,7 @@ _This command returns a Aelf pubkey for the given BIP 32 path_
 | ------------- | :------: |
 | Pubkey        |    32    |
 
-### SIGN Aelf TRANSACTION
+### SIGN Aelf Transfer
 
 #### Description
 
@@ -76,7 +74,7 @@ _This command signs a Aelf Transaction after having the user validate the transa
 
 | _CLA_ | _INS_ | _P1_ | _P2_ |   _Lc_   |     _Le_ |
 | ----- | :---: | ---: | ---- | :------: | -------: |
-| E0    |  06   |   01 | 00   | variable | variable |
+| E0    |  03   |   01 | 00   | variable | variable |
 
 ##### Input data
 
@@ -95,17 +93,17 @@ _This command signs a Aelf Transaction after having the user validate the transa
 | ------------- | :------: |
 | Signature     |    64    |
 
-### SIGN Aelf OFF-CHAIN MESSAGE
+### SIGN Aelf Get Tx Result
 
 #### Description
 
-_This command signs a Aelf Off-Chain Message after having the user validate the text of ASCII encoded messages, or hash of UTF-8 encoded messages:_
+_This command signs a Aelf Transaction after having the user validate the transaction-specific parameters:_
 
 ##### Command
 
 | _CLA_ | _INS_ | _P1_ | _P2_ |   _Lc_   |     _Le_ |
 | ----- | :---: | ---: | ---- | :------: | -------: |
-| E0    |  07   |   01 | 00   | variable | variable |
+| E0    |  04   |   01 | 00   | variable | variable |
 
 ##### Input data
 
@@ -116,7 +114,7 @@ _This command signs a Aelf Off-Chain Message after having the user validate the 
 | First derivation index (big endian)                 |    4     |
 | ...                                                 |    4     |
 | Last derivation index (big endian)                  |    4     |
-| Serialized off-chain message                        | variable |
+| Serialized transaction                              | variable |
 
 ##### Output data
 
@@ -167,14 +165,6 @@ APDU payload is encoded according to the APDU case
 | 2           | 0    | !0   | Input Data present, no Output Data - L is set to Lc     |
 | 3           | !0   | 0    | Output Data present, no Input Data - L is set to Le     |
 | 4           | !0   | !0   | Both Input and Output Data are present - L is set to Lc |
-
-#### Deprecation notice
-
-The `ADPU data length` field was formerly serialized as a 16bit unsigned big endian integer. As of version 0.2.0, this has been changed to an 8bit unsigned integer to improve compatibility with client libraries. In doing so, the following instructions have been deprecated.
-
-- 0x01 - GET_APP_CONFIGURATION
-- 0x02 - GET_PUBKEY
-- 0x03 - SIGN_MESSAGE
 
 ### APDU Response payload encoding
 
