@@ -127,3 +127,7 @@ First enable `blind-signing` in the App settings
 ```bash
 cargo run --manifest-path tests/Cargo.toml
 ```
+### Python
+```bash
+./python-test.sh <target_device>
+```
