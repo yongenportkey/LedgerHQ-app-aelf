@@ -43,9 +43,9 @@ typedef struct SystemGetTxResultInfo {
     const Pubkey* from;
     const Pubkey* chain;
     uint64_t ref_block_number;
-    uint64_t method_name;
     const Pubkey* to;
     uint64_t lamports;
+    SizedString method_name;
 } SystemGetTxResultInfo;
 
 typedef struct SystemAdvanceNonceInfo {
@@ -115,11 +115,11 @@ int print_system_allocate_with_seed_info(const char* primary_title,
                                          const PrintConfig* print_config);
 
 int parse_system_transfer_instruction(Parser* parser,
-                                      const Instruction* instruction,
+                                      Instruction* instruction,
                                       SystemTransferInfo* info);
 
 int parse_system_get_tx_result_instruction(Parser* parser,
-                                           const Instruction* instruction,
+                                           Instruction* instruction,
                                            SystemGetTxResultInfo* info);
 
 int print_system_transfer_info(const SystemTransferInfo* info);

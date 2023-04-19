@@ -83,9 +83,12 @@ int parse_option(Parser* parser, enum Option* value) {
 
 int parse_sized_string(Parser* parser, SizedString* string) {
     BAIL_IF(parse_u64(parser, &string->length));
+    PRINTF("G %d\n", string->length);
     BAIL_IF(string->length > SIZE_MAX);
+    PRINTF("G2\n");
     size_t len = (size_t) string->length;
     BAIL_IF(check_buffer_length(parser, len));
+    PRINTF("G3\n");
     string->string = (const char*) parser->buffer;
     advance(parser, len);
     return 0;

@@ -64,9 +64,8 @@ class TxResultInstruction:
     def serialize(self) -> bytes:
         serialized: bytes = self.from_pubkey
         serialized += self.chain_pubkey
-        serialized += len(self.ref_block_number).to_bytes(1, byteorder='little')
         serialized += self.ref_block_number
-        serialized += len(self.method_name).to_bytes(1, byteorder='little')
+        serialized += len(self.method_name).to_bytes(8, byteorder='little')
         serialized += self.method_name
         serialized += self.to_pubkey
         serialized += len(self.ticker).to_bytes(1, byteorder='little')
@@ -80,44 +79,19 @@ class SystemInstructionTransfer(Instruction):
         self.to_pubkey = to_pubkey
         self.ticker = ticker
 class SystemInstructionGetTxResult(TxResultInstruction):
-    def __init__(self, from_pubkey: bytes, chain_pubkey: bytes, ref_block_number: bytes, method_name: bytes, to_pubkey : bytes, ticker: bytes, amount: bytes):
+    def __init__(self, from_pubkey: bytes, chain_pubkey: bytes, ref_block_number: int, method_name: bytes, to_pubkey : bytes, ticker: bytes, amount: int):
         self.from_pubkey = from_pubkey
         self.chain_pubkey = chain_pubkey
-        self.ref_block_number = ref_block_number
+        self.ref_block_number = (ref_block_number).to_bytes(8, byteorder='little')
         self.method_name = method_name
         self.to_pubkey = to_pubkey
         self.ticker = ticker
         self.data = (amount).to_bytes(8, byteorder='little')
-# Cheat as we only support 1 SystemInstructionTransfer currently
-# TODO add support for multiple transfers and other instructions if the needs arises
-# class CompiledInstruction:
-#     program_id_index: int
-#     accounts: List[int]
-#     data: bytes
-
-#     def __init__(self, program_id_index: int, accounts: List[int], data: bytes):
-#         self.program_id_index = program_id_index
-#         self.accounts = accounts
-#         self.data = data
-
-#     def serialize(self) -> bytes:
-#         serialized: bytes = self.program_id_index.to_bytes(1, byteorder='little')
-#         serialized += len(self.accounts).to_bytes(1, byteorder='little')
-#         for account in self.accounts:
-#             serialized += (account).to_bytes(1, byteorder='little')
-#         serialized += len(self.data).to_bytes(1, byteorder='little')
-#         serialized += self.data
-#         return serialized
-
-# Solana communication message, header + list of public keys used by the instructions + instructions
-# with references to the keys array
 class MessageTransfer:
     recent_blockhash: bytes
     instruction: Instruction
 
     def __init__(self, instruction: Instruction):
-        # Cheat as we only support 1 SystemInstructionTransfer currently
-        # TODO add support for multiple transfers and other instructions if the needs arises
         self.recent_blockhash = base58.b58decode(FAKE_RECENT_BLOCKHASH)
         self.instruction = instruction
 
@@ -131,8 +105,6 @@ class MessageTxResult:
     txResultInstruction: TxResultInstruction
 
     def __init__(self, txResultInstruction: TxResultInstruction):
-        # Cheat as we only support 1 SystemInstructionTransfer currently
-        # TODO add support for multiple transfers and other instructions if the needs arises
         self.recent_blockhash = base58.b58decode(FAKE_RECENT_BLOCKHASH)
         self.txResultInstruction = txResultInstruction
 

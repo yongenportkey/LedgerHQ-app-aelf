@@ -36,11 +36,7 @@ typedef struct Hash {
 typedef struct Hash Blockhash;
 
 typedef struct Instruction {
-    const Pubkey* from_pubkey;
-    const Pubkey* chain_pubkey;
-    size_t ref_block_number_length;
-    const uint8_t* ref_block_number;
-    size_t method_name_length;
+    uint64_t method_name_length;
     const uint8_t* method_name;
     const Pubkey* to_pubkey;
     size_t ticker_length;

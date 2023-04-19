@@ -51,7 +51,7 @@ ELF_PACKED_DERIVATION_PATH_2    = pack_derivation_path("m/44'/1616'/0'/0'")
 
 TICKER = b'ELF'
 METHOD_NAME = b"Transfer"
-REF_BLOCK_NUMBER = b"153305643"
+REF_BLOCK_NUMBER = 153305643
 
 ### Package this currency configuration in exchange format ###
 

@@ -246,7 +246,7 @@
 //     SummaryItem* item = transaction_summary_primary_item();
 //     summary_item_set_pubkey(item, "Delegate from", cws_info->to);
 
-//     BAIL_IF(print_system_create_account_with_seed_info(NULL, cws_info, print_config));
+    // BAIL_IF(print_system_create_account_with_seed_info(NULL, cws_info, print_config));
 //     BAIL_IF(print_stake_initialize_info(NULL, si_info, print_config));
 //     BAIL_IF(print_delegate_stake_info(NULL, sd_info, print_config));
 

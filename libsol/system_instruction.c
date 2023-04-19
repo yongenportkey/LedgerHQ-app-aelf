@@ -31,7 +31,7 @@ int print_system_info(const SystemInfo* info, const PrintConfig* print_config) {
 // Returns 0 and populates SystemTransferInfo if provided a MessageHeader
 // and a transfer instruction, otherwise non-zero.
 int parse_system_transfer_instruction(Parser* parser,
-                                      const Instruction* instruction,
+                                      Instruction* instruction,
                                       SystemTransferInfo* info) {
     BAIL_IF(parse_pubkey(parser, &info->to));
     BAIL_IF(parse_data(parser, &instruction->ticker, &instruction->ticker_length));
@@ -40,12 +40,13 @@ int parse_system_transfer_instruction(Parser* parser,
 }
 
 int parse_system_get_tx_result_instruction(Parser* parser,
-                                           const Instruction* instruction,
+                                           Instruction* instruction,
                                            SystemGetTxResultInfo* info) {
+
     BAIL_IF(parse_pubkey(parser, &info->from));
     BAIL_IF(parse_pubkey(parser, &info->chain));
-    BAIL_IF(parse_data(parser, &info->ref_block_number, &instruction->ref_block_number_length));
-    BAIL_IF(parse_data(parser, &info->method_name, &instruction->method_name_length));
+    BAIL_IF(parse_u64(parser, &info->ref_block_number));
+    BAIL_IF(parse_sized_string(parser, &info->method_name));
     BAIL_IF(parse_pubkey(parser, &info->to));
     BAIL_IF(parse_data(parser, &instruction->ticker, &instruction->ticker_length));
     BAIL_IF(parse_u64(parser, &info->lamports));
@@ -87,13 +88,13 @@ int print_system_get_tx_result_info(const SystemGetTxResultInfo* info) {
     summary_item_set_pubkey(item, "From", info->from);
 
     item = transaction_summary_general_item();
-    summary_item_set_pubkey(item, "Chain address", info->chain);
+    summary_item_set_pubkey(item, "Contract", info->chain);
     
     item = transaction_summary_general_item();
     summary_item_set_i64(item, "Ref block number", info->ref_block_number);
 
     item = transaction_summary_general_item();
-    summary_item_set_i64(item, "Method name", info->method_name);
+    summary_item_set_sized_string(item, "Method name", &info->method_name);
 
     item = transaction_summary_general_item();
     summary_item_set_pubkey(item, "Recipient", info->to);
