@@ -9,7 +9,6 @@
 #define MAX_INSTRUCTIONS 1
 
 int process_message_body(const uint8_t* message_body, int message_body_length, int ins_code) {
-
     size_t instruction_count = 0;
     InstructionInfo instruction_info[MAX_INSTRUCTIONS];
     explicit_bzero(instruction_info, sizeof(InstructionInfo) * MAX_INSTRUCTIONS);

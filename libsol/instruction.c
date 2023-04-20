@@ -64,4 +64,3 @@ int print_system_get_tx_result_info(const SystemGetTxResultInfo* info) {
 
     return 0;
 }
-
