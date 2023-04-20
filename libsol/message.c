@@ -3,7 +3,6 @@
 #include "sol/message.h"
 #include "sol/print_config.h"
 #include "util.h"
-#include "globals.h"
 #include <string.h>
 
 // change this if you want to be able to add succesive tx
@@ -25,10 +24,10 @@ int process_message_body(const uint8_t* message_body,
     InstructionInfo* info = &instruction_info[instruction_count];
 
     switch (ins_code) {
-        case InsSignMessage:
+        case 3: // TRANSFER
             parse_system_transfer_instruction(&parser, &instruction, &info->transfer);
             break;
-        case InsGetTxResult:
+        case 4: // GET TX RESULT
             parse_system_get_tx_result_instruction(&parser, &instruction, &info->getTxResult);
             break;
     };
@@ -38,9 +37,9 @@ int process_message_body(const uint8_t* message_body,
     BAIL_IF(!parser_is_empty(&parser));
 
     switch (ins_code) {
-        case InsSignMessage:
+        case 3: // TRANSFER
             return print_system_transfer_info(&display_instruction_info[0]->transfer);
-        case InsGetTxResult:
+        case 4: // GET TX RESULT
             return print_system_get_tx_result_info(&display_instruction_info[0]->getTxResult);
     };
     return 1;
