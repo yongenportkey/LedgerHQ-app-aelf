@@ -132,12 +132,6 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
             THROW(ApduReplySdkNotSupported);
         }
     }
-
-    // Add fee payer to summary if needed
-    // const Pubkey *fee_payer = &header->pubkeys[0];
-    // if (print_config_show_authority(&print_config, fee_payer)) {
-    //     transaction_summary_set_fee_payer_pubkey(fee_payer);
-    // }
 }
 
 void handle_sign_message_ui(volatile unsigned int *flags) {
