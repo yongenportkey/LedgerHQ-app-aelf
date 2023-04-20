@@ -8,9 +8,7 @@
 // change this if you want to be able to add succesive tx
 #define MAX_INSTRUCTIONS 1
 
-int process_message_body(const uint8_t* message_body,
-                         int message_body_length,
-                         int ins_code) {
+int process_message_body(const uint8_t* message_body, int message_body_length, int ins_code) {
 
     size_t instruction_count = 0;
     InstructionInfo instruction_info[MAX_INSTRUCTIONS];
@@ -24,10 +22,10 @@ int process_message_body(const uint8_t* message_body,
     InstructionInfo* info = &instruction_info[instruction_count];
 
     switch (ins_code) {
-        case 3: // TRANSFER
+        case 3:  // TRANSFER
             parse_system_transfer_instruction(&parser, &instruction, &info->transfer);
             break;
-        case 4: // GET TX RESULT
+        case 4:  // GET TX RESULT
             parse_system_get_tx_result_instruction(&parser, &instruction, &info->getTxResult);
             break;
     };
@@ -37,9 +35,9 @@ int process_message_body(const uint8_t* message_body,
     BAIL_IF(!parser_is_empty(&parser));
 
     switch (ins_code) {
-        case 3: // TRANSFER
+        case 3:  // TRANSFER
             return print_system_transfer_info(&display_instruction_info[0]->transfer);
-        case 4: // GET TX RESULT
+        case 4:  // GET TX RESULT
             return print_system_get_tx_result_info(&display_instruction_info[0]->getTxResult);
     };
     return 1;

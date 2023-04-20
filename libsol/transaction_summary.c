@@ -4,7 +4,6 @@
 #include "util.h"
 #include <string.h>
 
-
 void summary_item_set_amount(SummaryItem* item, const char* title, uint64_t value) {
     item->kind = SummaryItemAmount;
     item->title = title;

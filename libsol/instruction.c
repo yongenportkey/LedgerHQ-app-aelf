@@ -16,7 +16,6 @@ int parse_system_transfer_instruction(Parser* parser,
 int parse_system_get_tx_result_instruction(Parser* parser,
                                            Instruction* instruction,
                                            SystemGetTxResultInfo* info) {
-
     BAIL_IF(parse_pubkey(parser, &info->from));
     BAIL_IF(parse_pubkey(parser, &info->chain));
     BAIL_IF(parse_u64(parser, &info->ref_block_number));
@@ -50,7 +49,7 @@ int print_system_get_tx_result_info(const SystemGetTxResultInfo* info) {
 
     item = transaction_summary_general_item();
     summary_item_set_pubkey(item, "Contract", info->chain);
-    
+
     item = transaction_summary_general_item();
     summary_item_set_i64(item, "Ref block number", info->ref_block_number);
 

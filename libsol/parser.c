@@ -125,7 +125,6 @@ int parse_message_header(Parser* parser, MessageHeader* header) {
 }
 
 int parse_data(Parser* parser, const uint8_t** data, size_t* data_length) {
-
     BAIL_IF(parse_length(parser, data_length));
     BAIL_IF(check_buffer_length(parser, *data_length));
     *data = parser->buffer;
