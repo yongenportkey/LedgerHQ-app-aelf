@@ -14,7 +14,11 @@ void test_parse_system_transfer_instruction() {
     Instruction instruction;
     InstructionInfo info;
 
-    assert(parse_system_transfer_instruction(&parser, &instruction, &info.transfer) == 0);
+    assert(parse_pubkey(&parser, &info.transfer.to) == 0);
+    assert(parse_data(&parser, &instruction.ticker, &instruction.ticker_length) == 0);
+    assert(parse_u64(&parser, &info.transfer.amount) == 0);
+
+    assert(parser.buffer_length == 0);
 }
 
 void test_parse_system_get_tx_result_instruction() {
@@ -22,7 +26,7 @@ void test_parse_system_get_tx_result_instruction() {
                          65, 244, 116, 159, 251, 208, 71, 249, 248, 106, 12, 101, 251, 194, 220, 110,
                          25, 243, 168, 153, 70, 176, 149, 11, 249, 97, 129, 59, 166, 179, 125, 34, 157,
                          206, 177, 207, 241, 207, 147, 41, 209, 214, 151, 188, 3, 221, 112, 57, 43, 66,
-                         35, 9, 0, 0, 0, 0, 8, 84, 114, 97, 110, 115, 102, 101, 114, 25, 243, 168, 153,
+                         35, 9, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 84, 114, 97, 110, 115, 102, 101, 114, 25, 243, 168, 153,
                          70, 176, 149, 11, 249, 97, 129, 59, 166, 179, 125, 34, 157, 206, 177, 207, 241,
                          207, 147, 41, 209, 214, 151, 188, 3, 221, 112, 57, 3, 69, 76, 70, 64, 12, 170,
                          59, 0, 0, 0, 0};
@@ -31,7 +35,15 @@ void test_parse_system_get_tx_result_instruction() {
     Instruction instruction;
     InstructionInfo info;
 
-    assert(parse_system_get_tx_result_instruction(&parser, &instruction, &info.getTxResult) == 0);
+    assert(parse_pubkey(&parser, &info.getTxResult.from) == 0);
+    assert(parse_pubkey(&parser, &info.getTxResult.chain) == 0);
+    assert(parse_u64(&parser, &info.getTxResult.ref_block_number) == 0);
+    assert(parse_sized_string(&parser, &info.getTxResult.method_name) == 0);
+    assert(parse_pubkey(&parser, &info.getTxResult.to) == 0);
+    assert(parse_data(&parser, &instruction.ticker, &instruction.ticker_length) == 0);
+    assert(parse_u64(&parser, &info.getTxResult.amount) == 0);
+    
+    assert(parser.buffer_length == 0);
 }
 
 // int test_print_system_transfer_info() {
@@ -42,7 +54,7 @@ void test_parse_system_get_tx_result_instruction() {
 
 int main() {
     test_parse_system_transfer_instruction();
-    // test_parse_system_get_tx_result_instruction();
+    test_parse_system_get_tx_result_instruction();
     // test_print_system_transfer_info();
     // test_print_system_get_tx_result_info();
 
