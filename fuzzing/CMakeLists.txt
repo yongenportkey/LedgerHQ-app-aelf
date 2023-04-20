@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.4)
 
-project(SolanaFuzzer VERSION 1.0.5 LANGUAGES C)
+project(AelfFuzzer VERSION 1.0.5 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)
 

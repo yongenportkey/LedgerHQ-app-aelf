@@ -73,7 +73,7 @@ UX_STEP_NOCB_INIT(ux_summary_step,
                           flags |= DisplayFlagLongPubkeys;
                       }
                       if (transaction_summary_display_item(step_index, flags)) {
-                          THROW(ApduReplySolanaSummaryUpdateFailed);
+                          THROW(ApduReplyAelfSummaryUpdateFailed);
                       }
                   },
                   {
@@ -86,52 +86,24 @@ UX_STEP_NOCB_INIT(ux_summary_step,
      + 1                               /* reject */        \
      + 1                               /* FLOW_END_STEP */ \
     )
-ux_flow_step_t const *flow_steps[MAX_FLOW_STEPS];
-
-static int scan_header_for_signer(const uint32_t *derivation_path,
-                                  uint32_t derivation_path_length,
-                                  size_t *signer_index,
-                                  const MessageHeader *header) {
-    uint8_t signer_pubkey[PUBKEY_SIZE];
-    get_public_key(signer_pubkey, derivation_path, derivation_path_length);
-    for (size_t i = 0; i < header->pubkeys_header.num_required_signatures; ++i) {
-        const Pubkey *current_pubkey = &(header->pubkeys[i]);
-        if (memcmp(current_pubkey, signer_pubkey, PUBKEY_SIZE) == 0) {
-            *signer_index = i;
-            return 0;
-        }
-    }
-    return -1;
-}
+ux_flow_step_t static const *flow_steps[MAX_FLOW_STEPS];
 
 void handle_sign_message_parse_message(volatile unsigned int *tx) {
-    if (!tx ||
-        (G_command.instruction != InsDeprecatedSignMessage &&
-         G_command.instruction != InsSignMessage) ||
-        G_command.state != ApduStatePayloadComplete) {
+    if (!tx || G_command.state != ApduStatePayloadComplete) {
         THROW(ApduReplySdkInvalidParameter);
     }
+
     // Handle the transaction message signing
     Parser parser = {G_command.message, G_command.message_length};
     PrintConfig print_config;
     print_config.expert_mode = (N_storage.settings.display_mode == DisplayModeExpert);
     print_config.signer_pubkey = NULL;
     MessageHeader *header = &print_config.header;
-    size_t signer_index;
 
     if (parse_message_header(&parser, header) != 0) {
-        // This is not a valid Solana message
-        THROW(ApduReplySolanaInvalidMessage);
+        // This is not a valid Aelf message
+        THROW(ApduReplyAelfInvalidMessage);
     }
-
-    // Ensure the requested signer is present in the header
-    if (scan_header_for_signer(G_command.derivation_path,
-                               G_command.derivation_path_length,
-                               &signer_index,
-                               header) != 0) {
-        THROW(ApduReplySolanaInvalidMessageHeader);
-    }
-    print_config.signer_pubkey = &header->pubkeys[signer_index];
 
     if (G_command.non_confirm) {
         // Uncomment this to allow unattended signing.
@@ -143,7 +115,7 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
 
     // Set the transaction summary
     transaction_summary_reset();
-    if (process_message_body(parser.buffer, parser.buffer_length, &print_config) != 0) {
+    if (process_message_body(parser.buffer, parser.buffer_length, G_command.instruction) != 0) {
         // Message not processed, throw if blind signing is not enabled
         if (N_storage.settings.allow_blind_sign == BlindSignEnabled) {
             SummaryItem *item = transaction_summary_primary_item();
@@ -159,12 +131,6 @@ void handle_sign_message_parse_message(volatile unsigned int *tx) {
         } else {
             THROW(ApduReplySdkNotSupported);
         }
-    }
-
-    // Add fee payer to summary if needed
-    const Pubkey *fee_payer = &header->pubkeys[0];
-    if (print_config_show_authority(&print_config, fee_payer)) {
-        transaction_summary_set_fee_payer_pubkey(fee_payer);
     }
 }
 
@@ -185,7 +151,7 @@ void handle_sign_message_ui(volatile unsigned int *flags) {
 
         ux_flow_init(0, flow_steps, NULL);
     } else {
-        THROW(ApduReplySolanaSummaryFinalizeFailed);
+        THROW(ApduReplyAelfSummaryFinalizeFailed);
     }
 
     *flags |= IO_ASYNCH_REPLY;

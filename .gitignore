@@ -7,6 +7,7 @@ src/glyphs.c
 src/glyphs.h
 .idea
 .vscode
+.devcontainer
 gitignore
 .vagrant
 libsol/target

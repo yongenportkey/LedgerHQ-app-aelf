@@ -12,7 +12,7 @@ from ragger.utils import app_path_from_app_name
 APPS_DIRECTORY = (Path(__file__).parent.parent / "elfs").resolve()
 
 # Adapt this name part of the compiled app <name>_<device>.elf in the APPS_DIRECTORY
-APP_NAME = "solana"
+APP_NAME = "aelf"
 
 BACKENDS = ["speculos", "ledgercomm", "ledgerwallet"]
 

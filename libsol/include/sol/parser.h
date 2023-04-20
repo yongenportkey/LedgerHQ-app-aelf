@@ -36,34 +36,16 @@ typedef struct Hash {
 typedef struct Hash Blockhash;
 
 typedef struct Instruction {
-    uint8_t program_id_index;
-    const uint8_t* accounts;
-    size_t accounts_length;
-    const uint8_t* data;
-    size_t data_length;
+    size_t ticker_length;
+    const uint8_t* ticker;
 } Instruction;
-
-typedef struct PubkeysHeader {
-    uint8_t num_required_signatures;
-    uint8_t num_readonly_signed_accounts;
-    uint8_t num_readonly_unsigned_accounts;
-    size_t pubkeys_length;
-} PubkeysHeader;
 
 typedef struct MessageHeader {
     bool versioned;
     uint8_t version;
-    PubkeysHeader pubkeys_header;
-    const Pubkey* pubkeys;
     const Blockhash* blockhash;
     size_t instructions_length;
 } MessageHeader;
-
-typedef struct OffchainMessageHeader {
-    uint8_t version;
-    uint8_t format;
-    uint16_t length;
-} OffchainMessageHeader;
 
 static inline int parser_is_empty(Parser* parser) {
     return parser->buffer_length == 0;
@@ -85,18 +67,12 @@ int parse_sized_string(Parser* parser, SizedString* string);
 
 int parse_pubkey(Parser* parser, const Pubkey** pubkey);
 
-int parse_pubkeys_header(Parser* parser, PubkeysHeader* header);
-
-int parse_pubkeys(Parser* parser, PubkeysHeader* header, const Pubkey** pubkeys);
-
 int parse_blockhash(Parser* parser, const Hash** hash);
 #define parse_blockhash parse_hash
 
 int parse_message_header(Parser* parser, MessageHeader* header);
 
-int parse_offchain_message_header(Parser* parser, OffchainMessageHeader* header);
-
-int parse_instruction(Parser* parser, Instruction* instruction);
+int parse_data(Parser* parser, const uint8_t** data, size_t* data_length);
 
 // FIXME: I don't belong here
 static inline bool pubkeys_equal(const Pubkey* pubkey1, const Pubkey* pubkey2) {

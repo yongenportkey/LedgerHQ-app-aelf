@@ -27,7 +27,7 @@ fn get_ledger() -> (Arc<LedgerWallet>, Pubkey) {
     let wallet_manager = initialize_wallet_manager().expect("Couldn't start wallet manager");
 
     // Update device list
-    const NO_DEVICE_HELP: &str = "No Ledger found, make sure you have a unlocked Ledger connected with the Ledger Wallet Solana running";
+    const NO_DEVICE_HELP: &str = "No Ledger found, make sure you have a unlocked Ledger connected with the Ledger Wallet solana running";
     wallet_manager.update_devices().expect(NO_DEVICE_HELP);
     assert!(
         !wallet_manager.list_devices().is_empty(),
@@ -1056,7 +1056,7 @@ fn test_spl_token_create_mint() -> Result<(), RemoteWalletError> {
         system_instruction::create_account(
             &owner,
             &mint,
-            501,
+            1616,
             std::mem::size_of::<spl_token::state::Mint>() as u64,
             &spl_token::id(),
         ),
@@ -1080,7 +1080,7 @@ fn test_spl_token_create_account() -> Result<(), RemoteWalletError> {
         system_instruction::create_account(
             &owner,
             &account,
-            501,
+            1616,
             std::mem::size_of::<spl_token::state::Mint>() as u64,
             &spl_token::id(),
         ),
@@ -1105,7 +1105,7 @@ fn test_spl_token_create_account2() -> Result<(), RemoteWalletError> {
         system_instruction::create_account(
             &owner,
             &account,
-            501,
+            1616,
             std::mem::size_of::<spl_token::state::Mint>() as u64,
             &spl_token::id(),
         ),
@@ -1134,7 +1134,7 @@ fn test_spl_token_create_multisig() -> Result<(), RemoteWalletError> {
         system_instruction::create_account(
             &owner,
             &account,
-            501,
+            1616,
             std::mem::size_of::<spl_token::state::Mint>() as u64,
             &spl_token::id(),
         ),

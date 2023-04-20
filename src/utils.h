@@ -33,6 +33,16 @@ void get_private_key_with_seed(cx_ecfp_private_key_t *privateKey,
                                const uint32_t *derivationPath,
                                uint8_t pathLength);
 
+static inline void printf_hex_array(const char *title __attribute__((unused)),
+                                    size_t len __attribute__((unused)),
+                                    const uint8_t *data __attribute__((unused))) {
+    printf("%s", title);
+    for (size_t i = 0; i < len; ++i) {
+        printf("%02x ", data[i]);
+    };
+    printf("\n");
+}
+
 /**
  * Deserialize derivation path from raw bytes.
  *

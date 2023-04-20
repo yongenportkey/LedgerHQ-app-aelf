@@ -3,7 +3,7 @@
 
 #define OFFCHAIN_MESSAGE_SIGNING_DOMAIN \
     "\xff"                              \
-    "solana offchain"
+    "aelf offchain"
 
 static int check_buffer_length(Parser* parser, size_t num) {
     return parser->buffer_length < num ? 1 : 0;
@@ -98,23 +98,6 @@ int parse_pubkey(Parser* parser, const Pubkey** pubkey) {
     return 0;
 }
 
-int parse_pubkeys_header(Parser* parser, PubkeysHeader* header) {
-    BAIL_IF(parse_u8(parser, &header->num_required_signatures));
-    BAIL_IF(parse_u8(parser, &header->num_readonly_signed_accounts));
-    BAIL_IF(parse_u8(parser, &header->num_readonly_unsigned_accounts));
-    BAIL_IF(parse_length(parser, &header->pubkeys_length));
-    return 0;
-}
-
-int parse_pubkeys(Parser* parser, PubkeysHeader* header, const Pubkey** pubkeys) {
-    BAIL_IF(parse_pubkeys_header(parser, header));
-    size_t pubkeys_size = header->pubkeys_length * PUBKEY_SIZE;
-    BAIL_IF(check_buffer_length(parser, pubkeys_size));
-    *pubkeys = (const Pubkey*) parser->buffer;
-    advance(parser, pubkeys_size);
-    return 0;
-}
-
 int parse_hash(Parser* parser, const Hash** hash) {
     BAIL_IF(check_buffer_length(parser, HASH_SIZE));
     *hash = (const Hash*) parser->buffer;
@@ -137,39 +120,14 @@ int parse_version(Parser* parser, MessageHeader* header) {
 }
 
 int parse_message_header(Parser* parser, MessageHeader* header) {
-    BAIL_IF(parse_version(parser, header));
-    BAIL_IF(parse_pubkeys(parser, &header->pubkeys_header, &header->pubkeys));
     BAIL_IF(parse_blockhash(parser, &header->blockhash));
-    BAIL_IF(parse_length(parser, &header->instructions_length));
     return 0;
 }
 
-int parse_offchain_message_header(Parser* parser, OffchainMessageHeader* header) {
-    const size_t domain_len = strlen(OFFCHAIN_MESSAGE_SIGNING_DOMAIN);
-    BAIL_IF(check_buffer_length(parser, domain_len));
-    int res;
-    if ((res = memcmp(OFFCHAIN_MESSAGE_SIGNING_DOMAIN, parser->buffer, domain_len)) != 0) {
-        return res;
-    }
-    advance(parser, domain_len);
-
-    BAIL_IF(parse_u8(parser, &header->version));
-    BAIL_IF(parse_u8(parser, &header->format));
-    BAIL_IF(parse_u16(parser, &header->length));
-    return 0;
-}
-
-static int parse_data(Parser* parser, const uint8_t** data, size_t* data_length) {
+int parse_data(Parser* parser, const uint8_t** data, size_t* data_length) {
     BAIL_IF(parse_length(parser, data_length));
     BAIL_IF(check_buffer_length(parser, *data_length));
     *data = parser->buffer;
     advance(parser, *data_length);
-    return 0;
-}
-
-int parse_instruction(Parser* parser, Instruction* instruction) {
-    BAIL_IF(parse_u8(parser, &instruction->program_id_index));
-    BAIL_IF(parse_data(parser, &instruction->accounts, &instruction->accounts_length));
-    BAIL_IF(parse_data(parser, &instruction->data, &instruction->data_length));
     return 0;
 }

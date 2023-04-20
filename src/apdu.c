@@ -26,58 +26,32 @@ int apdu_handle_message(const uint8_t* apdu_message,
 
     // must at least hold the class and instruction
     if (apdu_message_len <= OFFSET_INS) {
-        return ApduReplySolanaInvalidMessageSize;
+        return ApduReplyAelfInvalidMessageSize;
     }
 
     header.class = apdu_message[OFFSET_CLA];
     if (header.class != CLA) {
-        return ApduReplySolanaInvalidMessageHeader;
+        return ApduReplyAelfInvalidMessageHeader;
     }
 
     header.instruction = apdu_message[OFFSET_INS];
     switch (header.instruction) {
-        case InsDeprecatedGetAppConfiguration:
-        case InsDeprecatedGetPubkey:
-        case InsDeprecatedSignMessage: {
-            // must at least hold a full deprecated header
-            if (apdu_message_len < DEPRECATED_OFFSET_CDATA) {
-                return ApduReplySolanaInvalidMessageSize;
-            }
-
-            // deprecated data may be up to 64KiB
-            if (apdu_message_len > UINT16_MAX) {
-                return ApduReplySolanaInvalidMessageSize;
-            }
-
-            header.data_length = apdu_message ? U2BE(apdu_message, OFFSET_LC) : 0;
-            if (apdu_message_len != header.data_length + DEPRECATED_OFFSET_CDATA) {
-                return ApduReplySolanaInvalidMessageSize;
-            }
-
-            if (header.data_length > 0) {
-                header.data = apdu_message + DEPRECATED_OFFSET_CDATA;
-            }
-
-            header.deprecated_host = true;
-
-            break;
-        }
         case InsGetAppConfiguration:
         case InsGetPubkey:
         case InsSignMessage:
-        case InsSignOffchainMessage: {
+        case InsGetTxResult: {
             // must at least hold a full modern header
             if (apdu_message_len < OFFSET_CDATA) {
-                return ApduReplySolanaInvalidMessageSize;
+                return ApduReplyAelfInvalidMessageSize;
             }
             // modern data may be up to 255B
             if (apdu_message_len > UINT8_MAX + OFFSET_CDATA) {
-                return ApduReplySolanaInvalidMessageSize;
+                return ApduReplyAelfInvalidMessageSize;
             }
 
             header.data_length = apdu_message[OFFSET_LC];
             if (apdu_message_len != header.data_length + OFFSET_CDATA) {
-                return ApduReplySolanaInvalidMessageSize;
+                return ApduReplyAelfInvalidMessageSize;
             }
 
             if (header.data_length > 0) {
@@ -98,8 +72,7 @@ int apdu_handle_message(const uint8_t* apdu_message,
     // than replaces, the current message buffer
     const bool first_data_chunk = !(header.p2 & P2_EXTEND);
 
-    if (header.instruction == InsDeprecatedGetAppConfiguration ||
-        header.instruction == InsGetAppConfiguration) {
+    if (header.instruction == InsGetAppConfiguration) {
         // return early if no data is expected for the command
         explicit_bzero(apdu_command, sizeof(ApduCommand));
         apdu_command->state = ApduStatePayloadComplete;
@@ -107,9 +80,7 @@ int apdu_handle_message(const uint8_t* apdu_message,
         apdu_command->non_confirm = (header.p1 == P1_NON_CONFIRM);
         apdu_command->deprecated_host = header.deprecated_host;
         return 0;
-    } else if (header.instruction == InsDeprecatedSignMessage ||
-               header.instruction == InsSignMessage ||
-               header.instruction == InsSignOffchainMessage) {
+    } else if (header.instruction == InsSignMessage) {
         if (!first_data_chunk) {
             // validate the command in progress
             if (apdu_command->state != ApduStatePayloadInProgress ||
@@ -117,7 +88,7 @@ int apdu_handle_message(const uint8_t* apdu_message,
                 apdu_command->non_confirm != (header.p1 == P1_NON_CONFIRM) ||
                 apdu_command->deprecated_host != header.deprecated_host ||
                 apdu_command->num_derivation_paths != 1) {
-                return ApduReplySolanaInvalidMessage;
+                return ApduReplyAelfInvalidMessage;
             }
         } else {
             explicit_bzero(apdu_command, sizeof(ApduCommand));
@@ -130,14 +101,14 @@ int apdu_handle_message(const uint8_t* apdu_message,
     if (first_data_chunk) {
         if (!header.deprecated_host && header.instruction != InsGetPubkey) {
             if (!header.data_length) {
-                return ApduReplySolanaInvalidMessageSize;
+                return ApduReplyAelfInvalidMessageSize;
             }
             apdu_command->num_derivation_paths = header.data[0];
             header.data++;
             header.data_length--;
             // We only support one derivation path ATM
             if (apdu_command->num_derivation_paths != 1) {
-                return ApduReplySolanaInvalidMessage;
+                return ApduReplyAelfInvalidMessage;
             }
         } else {
             apdu_command->num_derivation_paths = 1;
@@ -158,31 +129,17 @@ int apdu_handle_message(const uint8_t* apdu_message,
     apdu_command->non_confirm = (header.p1 == P1_NON_CONFIRM);
     apdu_command->deprecated_host = header.deprecated_host;
 
-    // copy data to the buffer
-    if (header.instruction == InsDeprecatedSignMessage) {
-        // deprecated signmessage had a u16 data length prefix... deal with that
-        if (header.data_length < 2) {
-            return ApduReplySolanaInvalidMessageSize;
-        }
-        const size_t data_len = header.data ? U2BE(header.data, 0) : 0;
-        header.data += 2;
-        header.data_length -= 2;
-        if (header.data_length != data_len) {
-            return ApduReplySolanaInvalidMessageSize;
-        }
-    }
-
     if (header.data) {
         if (apdu_command->message_length + header.data_length > MAX_MESSAGE_LENGTH) {
-            return ApduReplySolanaInvalidMessageSize;
+            return ApduReplyAelfInvalidMessageSize;
         }
 
         memcpy(apdu_command->message + apdu_command->message_length,
                header.data,
                header.data_length);
         apdu_command->message_length += header.data_length;
-    } else if (header.instruction != InsDeprecatedGetPubkey && header.instruction != InsGetPubkey) {
-        return ApduReplySolanaInvalidMessageSize;
+    } else if (header.instruction != InsGetPubkey) {
+        return ApduReplyAelfInvalidMessageSize;
     }
 
     // check if more data is expected

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - main
       - develop
   pull_request:
 
@@ -32,13 +32,13 @@ jobs:
       - name: Build application
         run: |
           make BOLOS_SDK=${{ matrix.sdk.path }} DEBUG=1
-          cp bin/app.elf bin/solana_${{ matrix.sdk.name }}.elf
+          cp bin/app.elf bin/aelf_${{ matrix.sdk.name }}.elf
 
       - name: Upload application binaries
         uses: actions/upload-artifact@v3
         with:
-          name: solana_binaries
-          path: ./bin/solana_${{ matrix.sdk.name }}.elf
+          name: aelf_binaries
+          path: ./bin/aelf_${{ matrix.sdk.name }}.elf
           if-no-files-found: error
 
   job_scan_build:

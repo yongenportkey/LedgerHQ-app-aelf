@@ -1,5 +1,5 @@
 # ****************************************************************************
-#    Ledger App Solana
+#    Ledger App Aelf
 #    (c) 2020 Ledger SAS.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,19 +34,19 @@ ifeq ($(TARGET_NAME), TARGET_NANOX)
 else
     APP_LOAD_PARAMS += --appFlags 0x000
 endif
-APP_LOAD_PARAMS += --path "44'/501'"
+APP_LOAD_PARAMS += --path "44'/1616'"
 APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
 
-APPNAME      = "Solana"
+APPNAME      = "Aelf"
 APPVERSION_M = 1
-APPVERSION_N = 3
-APPVERSION_P = 1
+APPVERSION_N = 0
+APPVERSION_P = 0
 APPVERSION   = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
-    ICONNAME=icons/nanos_app_solana.gif
+    ICONNAME=icons/nanos_app_aelf.gif
 else
-    ICONNAME=icons/nanox_app_solana.gif
+    ICONNAME=icons/nanox_app_aelf.gif
 endif
 
 ################
@@ -82,7 +82,7 @@ else
     DEFINES += HAVE_BAGL_FONT_OPEN_SANS_LIGHT_16PX
 endif
 
-DEBUG = 0
+DEBUG := 0
 ifneq ($(DEBUG),0)
     DEFINES += HAVE_PRINTF
     ifeq ($(TARGET_NAME),TARGET_NANOS)
@@ -127,7 +127,7 @@ endif
 WITH_U2F=0
 ifneq ($(WITH_U2F),0)
     DEFINES         += HAVE_U2F HAVE_IO_U2F
-    DEFINES         += U2F_PROXY_MAGIC=\"~SOL\"
+    DEFINES         += U2F_PROXY_MAGIC=\"~ELF\"
 		SDK_SOURCE_PATH += lib_u2f
 endif
 
@@ -154,4 +154,4 @@ include $(BOLOS_SDK)/Makefile.rules
 dep/%.d: %.c Makefile
 
 listvariants:
-	@echo VARIANTS COIN solana
+	@echo VARIANTS COIN aelf

@@ -18,7 +18,6 @@
 #include "utils.h"
 #include "getPubkey.h"
 #include "signMessage.h"
-#include "signOffchainMessage.h"
 #include "apdu.h"
 #include "menu.h"
 
@@ -46,9 +45,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
     if (G_command.state == ApduStatePayloadInProgress) {
         THROW(ApduReplySuccess);
     }
-
     switch (G_command.instruction) {
-        case InsDeprecatedGetAppConfiguration:
         case InsGetAppConfiguration:
             G_io_apdu_buffer[0] = N_storage.settings.allow_blind_sign;
             G_io_apdu_buffer[1] = N_storage.settings.pubkey_display;
@@ -58,19 +55,14 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
             *tx = 5;
             THROW(ApduReplySuccess);
 
-        case InsDeprecatedGetPubkey:
         case InsGetPubkey:
             handle_get_pubkey(flags, tx);
             break;
 
-        case InsDeprecatedSignMessage:
         case InsSignMessage:
+        case InsGetTxResult:
             handle_sign_message_parse_message(tx);
             handle_sign_message_ui(flags);
-            break;
-
-        case InsSignOffchainMessage:
-            handle_sign_offchain_message(flags, tx);
             break;
 
         default:
@@ -112,7 +104,6 @@ void app_main(void) {
                 }
 
                 PRINTF("New APDU received:\n%.*H\n", rx, G_io_apdu_buffer);
-
                 handleApdu(&flags, &tx, rx);
             }
             CATCH(ApduReplySdkExceptionIoReset) {

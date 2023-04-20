@@ -1,223 +1,55 @@
 #include "common_byte_strings.h"
 #include "instruction.h"
-#include "sol/parser.h"
-#include "stake_instruction.h"
-#include "system_instruction.h"
+#include "instruction.c"
 #include "util.h"
-#include <assert.h>
 #include <stdio.h>
-#include <string.h>
+#include <assert.h>
 
-void test_instruction_program_id_system() {
-    Pubkey program_id;
-    memcpy(&program_id, &system_program_id, PUBKEY_SIZE);
-    Instruction instruction = {0, NULL, 0, NULL, 0};
-    {
-        MessageHeader header = {false, 0, {0, 0, 0, 1}, &program_id, NULL, 1};
-        assert(instruction_program_id(&instruction, &header) == ProgramIdSystem);
-    }
-    {
-        MessageHeader header = {true, 0, {0, 0, 0, 1}, &program_id, NULL, 1};
-        assert(instruction_program_id(&instruction, &header) == ProgramIdSystem);
-    }
+void test_parse_system_transfer_instruction() {
+    uint8_t message[] = {102, 38,  95,  226, 213, 53,  183, 237, 66,  87,  167, 100, 59,  104, 28,
+                         146, 132, 152, 243, 119, 211, 52,  7,   237, 187, 198, 146, 131, 169, 188,
+                         76,  161, 3,   69,  76,  70,  64,  12,  170, 59,  0,   0,   0,   0};
+
+    Parser parser = {message, sizeof(message)};
+    Instruction instruction;
+    InstructionInfo info;
+
+    assert(parse_pubkey(&parser, &info.transfer.to) == 0);
+    assert(parse_data(&parser, &instruction.ticker, &instruction.ticker_length) == 0);
+    assert(parse_u64(&parser, &info.transfer.amount) == 0);
+
+    assert(parser.buffer_length == 0);
 }
 
-void test_instruction_program_id_stake() {
-    Pubkey program_id;
-    memcpy(&program_id, &stake_program_id, PUBKEY_SIZE);
-    Instruction instruction = {0, NULL, 0, NULL, 0};
-    {
-        MessageHeader header = {false, 0, {0, 0, 0, 1}, &program_id, NULL, 1};
-        assert(instruction_program_id(&instruction, &header) == ProgramIdStake);
-    }
-    {
-        MessageHeader header = {true, 0, {0, 0, 0, 1}, &program_id, NULL, 1};
-        assert(instruction_program_id(&instruction, &header) == ProgramIdStake);
-    }
-}
+void test_parse_system_get_tx_result_instruction() {
+    uint8_t message[] = {222, 57,  245, 98,  241, 43,  126, 46,  147, 146, 232, 162, 134, 156, 9,
+                         246, 65,  244, 116, 159, 251, 208, 71,  249, 248, 106, 12,  101, 251, 194,
+                         220, 110, 25,  243, 168, 153, 70,  176, 149, 11,  249, 97,  129, 59,  166,
+                         179, 125, 34,  157, 206, 177, 207, 241, 207, 147, 41,  209, 214, 151, 188,
+                         3,   221, 112, 57,  43,  66,  35,  9,   0,   0,   0,   0,   8,   0,   0,
+                         0,   0,   0,   0,   0,   84,  114, 97,  110, 115, 102, 101, 114, 25,  243,
+                         168, 153, 70,  176, 149, 11,  249, 97,  129, 59,  166, 179, 125, 34,  157,
+                         206, 177, 207, 241, 207, 147, 41,  209, 214, 151, 188, 3,   221, 112, 57,
+                         3,   69,  76,  70,  64,  12,  170, 59,  0,   0,   0,   0};
 
-void test_instruction_program_id_unknown() {
-    Pubkey program_id = {{BYTES32_BS58_2}};
-    Instruction instruction = {0, NULL, 0, NULL, 0};
-    {
-        MessageHeader header = {false, 0, {0, 0, 0, 1}, &program_id, NULL, 1};
-        assert(instruction_program_id(&instruction, &header) == ProgramIdUnknown);
-    }
-    {
-        MessageHeader header = {true, 0, {0, 0, 0, 1}, &program_id, NULL, 1};
-        assert(instruction_program_id(&instruction, &header) == ProgramIdUnknown);
-    }
-}
+    Parser parser = {message, sizeof(message)};
+    Instruction instruction;
+    InstructionInfo info;
 
-void test_instruction_validate_ok() {
-    uint8_t accounts[] = {1, 2, 3};
-    Instruction instruction = {0, accounts, 3, NULL, 0};
-    {
-        MessageHeader header = {false, 0, {0, 0, 0, 4}, NULL, NULL, 1};
-        assert(instruction_validate(&instruction, &header) == 0);
-    }
-    {
-        MessageHeader header = {true, 0, {0, 0, 0, 4}, NULL, NULL, 1};
-        assert(instruction_validate(&instruction, &header) == 0);
-    }
-}
+    assert(parse_pubkey(&parser, &info.getTxResult.from) == 0);
+    assert(parse_pubkey(&parser, &info.getTxResult.chain) == 0);
+    assert(parse_u64(&parser, &info.getTxResult.ref_block_number) == 0);
+    assert(parse_sized_string(&parser, &info.getTxResult.method_name) == 0);
+    assert(parse_pubkey(&parser, &info.getTxResult.to) == 0);
+    assert(parse_data(&parser, &instruction.ticker, &instruction.ticker_length) == 0);
+    assert(parse_u64(&parser, &info.getTxResult.amount) == 0);
 
-void test_instruction_validate_bad_program_id_index_fail() {
-    uint8_t accounts[] = {1, 2, 3};
-    Instruction instruction = {4, accounts, 3, NULL, 0};
-    {
-        MessageHeader header = {false, 0, {0, 0, 0, 4}, NULL, NULL, 1};
-        assert(instruction_validate(&instruction, &header) == 1);
-    }
-    {
-        MessageHeader header = {true, 0, {0, 0, 0, 4}, NULL, NULL, 1};
-        assert(instruction_validate(&instruction, &header) == 1);
-    }
-}
-
-void test_instruction_validate_bad_first_account_index_fail() {
-    uint8_t accounts[] = {4, 2, 3};
-    Instruction instruction = {0, accounts, 3, NULL, 0};
-    {
-        MessageHeader header = {false, 0, {0, 0, 0, 4}, NULL, NULL, 1};
-        assert(instruction_validate(&instruction, &header) == 1);
-    }
-    {
-        MessageHeader header = {true, 0, {0, 0, 0, 4}, NULL, NULL, 1};
-        assert(instruction_validate(&instruction, &header) == 1);
-    }
-}
-
-void test_instruction_validate_bad_last_account_index_fail() {
-    uint8_t accounts[] = {1, 2, 4};
-    Instruction instruction = {0, accounts, 3, NULL, 0};
-    {
-        MessageHeader header = {false, 0, {0, 0, 0, 4}, NULL, NULL, 1};
-        assert(instruction_validate(&instruction, &header) == 1);
-    }
-    {
-        MessageHeader header = {true, 0, {0, 0, 0, 4}, NULL, NULL, 1};
-        assert(instruction_validate(&instruction, &header) == 1);
-    }
-}
-
-void test_static_brief_initializer_macros() {
-    InstructionBrief system_test = SYSTEM_IX_BRIEF(SystemTransfer);
-    InstructionBrief system_expect = {ProgramIdSystem, .system = SystemTransfer};
-    assert(memcmp(&system_test, &system_expect, sizeof(InstructionBrief)) == 0);
-    InstructionBrief stake_test = STAKE_IX_BRIEF(StakeDelegate);
-    InstructionBrief stake_expect = {ProgramIdStake, .stake = StakeDelegate};
-    assert(memcmp(&stake_test, &stake_expect, sizeof(InstructionBrief)) == 0);
-}
-
-void test_instruction_info_matches_brief() {
-    InstructionInfo info = {
-        .kind = ProgramIdSystem,
-        .system =
-            {
-                .kind = SystemTransfer,
-                .transfer = {NULL, NULL, 0},
-            },
-    };
-    InstructionBrief brief_pass = SYSTEM_IX_BRIEF(SystemTransfer);
-    assert(instruction_info_matches_brief(&info, &brief_pass));
-    InstructionBrief brief_fail = SYSTEM_IX_BRIEF(SystemAdvanceNonceAccount);
-    assert(!instruction_info_matches_brief(&info, &brief_fail));
-}
-
-void test_instruction_infos_match_briefs() {
-    InstructionInfo infos[] = {{
-                                   .kind = ProgramIdSystem,
-                                   .system =
-                                       {
-                                           .kind = SystemTransfer,
-                                           .transfer = {NULL, NULL, 0},
-                                       },
-                               },
-                               {
-                                   .kind = ProgramIdStake,
-                                   .stake =
-                                       {
-                                           .kind = StakeDelegate,
-                                           .delegate_stake = {NULL, NULL, NULL},
-                                       },
-                               }};
-    InstructionBrief briefs[] = {
-        SYSTEM_IX_BRIEF(SystemTransfer),
-        STAKE_IX_BRIEF(StakeDelegate),
-    };
-    InstructionBrief bad_briefs[] = {
-        SYSTEM_IX_BRIEF(SystemTransfer),
-        STAKE_IX_BRIEF(StakeSplit),
-    };
-    InstructionInfo* display_infos[] = {&infos[0], &infos[1]};
-    size_t infos_len = ARRAY_LEN(infos);
-    assert(infos_len == ARRAY_LEN(display_infos));
-    assert(infos_len == ARRAY_LEN(briefs));
-    assert(infos_len == ARRAY_LEN(bad_briefs));
-    assert(instruction_infos_match_briefs(display_infos, briefs, infos_len));
-    assert(!instruction_infos_match_briefs(display_infos, bad_briefs, infos_len));
-}
-
-void test_instruction_accounts_iterator_next() {
-    uint8_t instruction_accounts[] = {0, 1, 2};
-    Instruction instruction = {
-        2,
-        instruction_accounts,
-        ARRAY_LEN(instruction_accounts),
-        NULL,
-        0,
-    };
-    Pubkey header_pubkeys[] = {
-        {{BYTES32_BS58_2}},
-        {{BYTES32_BS58_3}},
-        {{BYTES32_BS58_4}},
-        {{BYTES32_BS58_5}},
-    };
-    MessageHeader header = {
-        false,
-        0,
-        {0, 0, 0, ARRAY_LEN(header_pubkeys)},
-        header_pubkeys,
-        NULL,
-        1,
-    };
-    InstructionAccountsIterator it;
-    instruction_accounts_iterator_init(&it, &header, &instruction);
-    size_t expected_remaining = ARRAY_LEN(instruction_accounts);
-    assert(instruction_accounts_iterator_remaining(&it) == expected_remaining--);
-    const Pubkey* pubkey;
-
-    Pubkey expected1 = {{BYTES32_BS58_2}};
-    assert(instruction_accounts_iterator_next(&it, &pubkey) == 0);
-    assert(memcmp(pubkey, &expected1, PUBKEY_SIZE) == 0);
-    assert(instruction_accounts_iterator_remaining(&it) == expected_remaining--);
-
-    // Test skipping a pubkey
-    assert(instruction_accounts_iterator_next(&it, NULL) == 0);
-    assert(instruction_accounts_iterator_remaining(&it) == expected_remaining--);
-
-    Pubkey expected3 = {{BYTES32_BS58_4}};
-    assert(instruction_accounts_iterator_next(&it, &pubkey) == 0);
-    assert(instruction_accounts_iterator_remaining(&it) == expected_remaining);
-    assert(memcmp(pubkey, &expected3, PUBKEY_SIZE) == 0);
-
-    assert(instruction_accounts_iterator_next(&it, &pubkey) == 1);
-    assert(instruction_accounts_iterator_remaining(&it) == expected_remaining);
+    assert(parser.buffer_length == 0);
 }
 
 int main() {
-    test_instruction_validate_ok();
-    test_instruction_validate_bad_program_id_index_fail();
-    test_instruction_validate_bad_first_account_index_fail();
-    test_instruction_validate_bad_last_account_index_fail();
-    test_instruction_program_id_unknown();
-    test_instruction_program_id_stake();
-    test_instruction_program_id_system();
-    test_static_brief_initializer_macros();
-    test_instruction_info_matches_brief();
-    test_instruction_infos_match_briefs();
-    test_instruction_accounts_iterator_next();
+    test_parse_system_transfer_instruction();
+    test_parse_system_get_tx_result_instruction();
 
     printf("passed\n");
     return 0;

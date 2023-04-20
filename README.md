@@ -1,14 +1,14 @@
 [![Build Status](https://travis-ci.org/solana-labs/ledger-app-solana.svg?branch=master)](https://travis-ci.org/solana-labs/ledger-app-solana)
 
-# Solana app for Ledger Wallet
+# Aelf app for Ledger Wallet
 
 ## Overview
 
-This app adds support for the Solana native token to Ledger Nano S hardware wallet.
+This app adds support for the Aelf native token to Ledger Nano S/SP/X hardware wallet.
 
 Current Features:
 - Pubkey queries
-- Parse, display and sign all Solana CLI generated transaction formats
+- Parse, display and sign all Aelf CLI generated transaction formats
 - Blind sign arbitrary transactions (Enabled via settings)
 
 ## Prerequisites
@@ -126,4 +126,8 @@ make -C libsol
 First enable `blind-signing` in the App settings
 ```bash
 cargo run --manifest-path tests/Cargo.toml
+```
+### Python
+```bash
+./python-test.sh <target_device>
 ```
