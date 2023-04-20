@@ -47,8 +47,7 @@ UX_FLOW(ux_display_public_flow,
         &ux_display_public_flow_7_step);
 
 void handle_get_pubkey(volatile unsigned int *flags, volatile unsigned int *tx) {
-    if (!flags || !tx ||
-        (G_command.instruction != InsGetPubkey) ||
+    if (!flags || !tx || (G_command.instruction != InsGetPubkey) ||
         G_command.state != ApduStatePayloadComplete) {
         THROW(ApduReplySdkInvalidParameter);
     }

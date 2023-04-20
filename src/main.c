@@ -58,7 +58,7 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx, int rx)
         case InsGetPubkey:
             handle_get_pubkey(flags, tx);
             break;
-        
+
         case InsSignMessage:
         case InsGetTxResult:
             handle_sign_message_parse_message(tx);
