@@ -7,8 +7,6 @@ on:
       - main
       - develop
   pull_request:
-    branches:
-      - main
 
 jobs:
   build_application:
