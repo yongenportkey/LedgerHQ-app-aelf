@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/solana-labs/ledger-app-solana.svg?branch=master)](https://travis-ci.org/solana-labs/ledger-app-solana)
+[![Code style check](https://github.com/blooo-io/LedgerHQ-app-aelf/actions/workflows/lint-workflow.yml/badge.svg)](https://github.com/blooo-io/LedgerHQ-app-aelf/actions/workflows/lint-workflow.yml)
+[![Compilation & tests](https://github.com/blooo-io/LedgerHQ-app-aelf/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/blooo-io/LedgerHQ-app-aelf/actions/workflows/ci-workflow.yml)
+[![Sonarcloud](https://github.com/blooo-io/LedgerHQ-app-aelf/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/blooo-io/LedgerHQ-app-aelf/actions/workflows/sonarcloud.yml)
 
 # Aelf app for Ledger Wallet
 
